@@ -90,7 +90,7 @@ set_target_properties(sparql-parser PROPERTIES
         CXX_STANDARD 17)
 
 
-target_include_directories(sparql-parser PRIVATE
+include_directories(sparql-parser PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/
         ${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/src/misc
         ${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/src/atn

@@ -115,7 +115,7 @@ install(TARGETS sparql-parser
 
 
 install(DIRECTORY "${PROJECT_SOURCE_DIR}/sparql_Grammer/generated/"
-        DESTINATION "include/sparql-parser/"
+        DESTINATION "include/sparql-parser"
         #        COMPONENT dev
         FILES_MATCHING PATTERN "*.h"
         )
@@ -129,7 +129,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparql-parser-config-version.cmake DES
 
 
 install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/"
-        DESTINATION "include/sparql-parser"
+        DESTINATION "include/sparql-parser/"
         #        COMPONENT dev
         FILES_MATCHING PATTERN "*.h"
         )

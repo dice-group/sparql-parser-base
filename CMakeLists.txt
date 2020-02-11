@@ -114,7 +114,7 @@ install(TARGETS sparql-parser
         EXPORT sparql-parser-targets)
 
 
-install(DIRECTORY "${sparql-GENERATED_DIR}"
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/sparql_Grammer/generated/"
         DESTINATION "include/sparql-parser/"
         #        COMPONENT dev
         FILES_MATCHING PATTERN "*.h"

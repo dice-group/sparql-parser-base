@@ -114,8 +114,8 @@ install(TARGETS sparql-parser
         EXPORT sparql-parser-targets)
 
 
-install(DIRECTORY "${sparql-GENERATED_DIR}/"
-        DESTINATION "include/sparql-parser"
+install(DIRECTORY "${sparql-GENERATED_DIR}"
+        DESTINATION "include/sparql-parser/"
         #        COMPONENT dev
         FILES_MATCHING PATTERN "*.h"
         )
@@ -126,7 +126,6 @@ install(DIRECTORY "${sparql-GENERATED_DIR}/"
 # TODO: please test if the conan package without does also work properly
 set(ANTLR4_INSTALL ON)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparql-parser-config-version.cmake DESTINATION "share/sparql-parser/cmake")
-#install(DIRECTORY include/sparql-parser DESTINATION "include")
 
 
 install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/"

@@ -75,7 +75,7 @@ install(TARGETS antlr4_static
         EXPORT antlr4-targets)
 
 install(DIRECTORY "${PROJECT_SOURCE_DIR}/ANTLR_runtime/src/"
-        DESTINATION "include/"
+        DESTINATION "include/SparqlBaseParser/"
         COMPONENT dev 
         FILES_MATCHING PATTERN "*.h"
         )

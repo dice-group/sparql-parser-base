@@ -2,11 +2,11 @@ from conans import ConanFile, CMake
 
 
 class sparqlParserBase(ConanFile):
-    name = "sparql_Grammer-parser-base"
-    version = "0.1"
+    name = "Sparql-Base-Parser"
+    version = "0.5"
     author = "DICE Group <info@dice-research.org>"
     description = "A ANTLR4 base for SPARQL parser."
-    homepage = "https://github.com/dice-group/sparql_Grammer-parser"
+    homepage = "https://github.com/dice-group/sparql-parser"
     url = homepage
     license = "AGPL"
     topics = "SPARQL", "parser", "semantic web"

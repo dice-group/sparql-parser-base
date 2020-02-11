@@ -78,6 +78,12 @@ install(DIRECTORY "${sparql-GENERATED_DIR}"
         FILES_MATCHING PATTERN "*.h"
         )
 
+install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/"
+        DESTINATION "include/sparql-parser"
+        #        COMPONENT dev
+        FILES_MATCHING PATTERN "*.h"
+        )
+
 # to install antlr4 runtime target
 # TODO: may not be necessary
 # TODO: please test if the conan package without does also work properly

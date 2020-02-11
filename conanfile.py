@@ -14,7 +14,7 @@ class sparqlParserBase(ConanFile):
     requires = ()
     generators = "cmake", "cmake_find_package", "cmake_paths"
     exports = "LICENSE.txt"
-    exports_sources ="ANTLR_bin/*","ANTLR_runtime/*", "sparql_Grammer/*", "CMakeLists.txt", "cmake/*"
+    exports_sources ="ANTLR_bin/*","ANTLR_runtime/*", "sparql-grammer/*", "CMakeLists.txt", "cmake/*"
     no_copy_source = True
 
     def package(self):

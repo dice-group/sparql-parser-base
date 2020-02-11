@@ -1,11 +1,26 @@
-# -*- mode:cmake -*-
 cmake_minimum_required(VERSION 3.13)
-# 2.8 needed because of ExternalProject
+
+project(sparql-parser VERSION 0.9.0)
+
+if (NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
+    if (NOT CMAKE_BUILD_TYPE)
+        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
+    endif ()
+endif ()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fomit-frame-pointer -momit-leaf-frame-pointer")
+else ()
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fomit-frame-pointer")
+endif ()
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -g -O0")
 
 
+# build antlr4
+LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/antlr4cmake)
 
-project(SparqlBaseParser VERSION 0.9.0)
-
+# set(ANTLR4_WITH_STATIC_CRT OFF)
+add_definitions(-DANTLR4CPP_STATIC)
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
     find_package(PkgConfig REQUIRED)
@@ -19,9 +34,15 @@ endif ()
 find_package(Java COMPONENTS Runtime REQUIRED)
 
 
-add_subdirectory(ANTLR_runtime)
+set(ANTLR4_TAG "4.8")
+set(ANTLR_EXECUTABLE "${PROJECT_BINARY_DIR}/antlr-${ANTLR4_TAG}-complete.jar")
+if (NOT EXISTS "${ANTLR_EXECUTABLE}")
+    file(DOWNLOAD https://www.antlr.org/download/antlr-${ANTLR4_TAG}-complete.jar ${ANTLR_EXECUTABLE} SHOW_PROGRESS)
+endif ()
 
-add_subdirectory(sparql_Grammer)
+include(ExternalAntlr4Cpp)
+
+add_subdirectory(sparql-grammer)
 
 
 if (EXISTS LICENSE.txt)
@@ -31,10 +52,3 @@ elseif (EXISTS ../../LICENSE.txt)
     install(FILES ../../LICENSE.txt
             DESTINATION "share/doc/libantlr4")
 endif ()
-
-#install(FILES README.md VERSION
-#    DESTINATION "share/doc/libantlr4")
-#
-#set(CPACK_PACKAGE_CONTACT "antlr-discussion@googlegroups.com")
-#set(CPACK_PACKAGE_VERSION ${ANTLR_VERSION})
-#include(CPack)

@@ -37,3 +37,6 @@ cmake-build*/
 # intellij
 .idea/
 venv/
+
+# project specific
+/sparql-grammer/generated/

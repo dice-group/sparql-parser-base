@@ -2,8 +2,8 @@ from conans import ConanFile, CMake
 
 
 class sparqlParserBase(ConanFile):
-    name = "Sparql-Base-Parser"
-    version = "0.5"
+    name = "sparql-parser"
+    version = "0.1.0"
     author = "DICE Group <info@dice-research.org>"
     description = "A ANTLR4 base for SPARQL parser."
     homepage = "https://github.com/dice-group/sparql-parser"
@@ -14,7 +14,10 @@ class sparqlParserBase(ConanFile):
     requires = ()
     generators = "cmake", "cmake_find_package", "cmake_paths"
     exports = "LICENSE.txt"
-    exports_sources ="ANTLR_bin/*","ANTLR_runtime/*", "sparql-grammer/*", "CMakeLists.txt", "cmake/*"
+    exports_sources = (
+        "sparql-grammer/*",
+        "CMakeLists.txt",
+        "antlr4cmake/*")
     no_copy_source = True
 
     def package(self):
@@ -22,8 +25,6 @@ class sparqlParserBase(ConanFile):
 
         cmake.configure()
         cmake.install()
-
-
 
     def imports(self):
         self.copy("license*", dst="licenses", folder=True, ignore_case=True)

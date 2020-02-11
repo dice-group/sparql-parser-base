@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(sparql-parser VERSION 0.9.0)
+project(sparql-parser VERSION 0.1.0)
 
 if (NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
     if (NOT CMAKE_BUILD_TYPE)

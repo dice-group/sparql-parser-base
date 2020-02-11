@@ -48,6 +48,17 @@ set_target_properties(sparql-parser PROPERTIES
         CXX_STANDARD 17)
 
 
+target_include_directories(sparql-parser PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/
+        ${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/src/misc
+        ${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/src/atn
+        ${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/src/dfa
+        ${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/src/tree
+        ${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/support
+        ${PROJECT_SOURCE_DIR}/sparql_Grammer/generated
+        )
+
+
 # Make package findable
 configure_file(cmake/dummy-config.cmake.in sparql-parser-config.cmake @ONLY)
 

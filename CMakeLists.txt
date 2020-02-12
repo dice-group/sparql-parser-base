@@ -47,20 +47,18 @@ antlr_target(Sparql Sparql.g4 LEXER PARSER LISTENER VISITOR PACKAGE Dice::tentri
 # include generated files in project environment
 include_directories(${ANTLR_Sparql_OUTPUT_DIR})
 
-
 add_library(sparql-parser STATIC
         ${ANTLR_Sparql_CXX_OUTPUTS})
 
-add_dependencies(sparql-parser antlr4_static)
 
 set_target_properties(sparql-parser PROPERTIES
         CXX_STANDARD 17)
 
-target_link_libraries(sparql-parser antlr4_static)
+target_link_libraries(sparql-parser PUBLIC antlr4_static)
 
 
 add_dependencies(sparql-parser
-        antlr4_runtime)
+        antlr4_static)
 
 target_include_directories(sparql-parser PRIVATE
         ${ANTLR4_INCLUDE_DIRS}

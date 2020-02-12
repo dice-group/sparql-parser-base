@@ -37,47 +37,28 @@ endif ()
 SET(ANTLR4_INSTALL ON)
 include(ExternalAntlr4Cpp)
 
+# add antrl4cpp artifacts to project environment
+include_directories(${ANTLR4_INCLUDE_DIRS})
 
-set(sparql-GENERATED_DIR "${PROJECT_SOURCE_DIR}/generated")
-set(sparql-GENERATED_SRC
-        ${sparql-GENERATED_DIR}/SparqlLexer.cpp
-        ${sparql-GENERATED_DIR}/SparqlParser.cpp
-        ${sparql-GENERATED_DIR}/SparqlBaseListener.cpp
-        ${sparql-GENERATED_DIR}/SparqlBaseVisitor.cpp
-        ${sparql-GENERATED_DIR}/SparqlListener.cpp
-        ${sparql-GENERATED_DIR}/SparqlVisitor.cpp
-        )
+# add macros to generate ANTLR Cpp code from grammar
+find_package(ANTLR REQUIRED)
+antlr_target(Sparql Sparql.g4 LEXER PARSER LISTENER VISITOR PACKAGE Dice::tentris::sparql::parser)
 
-foreach (src_file ${sparql-GENERATED_SRC})
-    set_source_files_properties(
-            ${src_file}
-            PROPERTIES
-            GENERATED TRUE
-    )
-endforeach (src_file ${sparql-GENERATED_SRC})
+# include generated files in project environment
+include_directories(${ANTLR_SparqlLexer_OUTPUT_DIR})
+include_directories(${ANTLR_SparqlParser_OUTPUT_DIR})
 
-add_custom_target(GenerateParser DEPENDS ${sparql-GENERATED_SRC})
-add_custom_command(OUTPUT ${sparql-GENERATED_SRC}
-        COMMAND
-        ${CMAKE_COMMAND} -E make_directory ${sparql-GENERATED_DIR}/
-        COMMAND
-        java -jar "${ANTLR_EXECUTABLE}" -Werror -Dlanguage=Cpp -listener -visitor -o ${sparql-GENERATED_DIR}/ -package Dice::tentris::sparql::parser Sparql.g4
-        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/"
-        DEPENDS Sparql.g4
-        )
 
 add_library(sparql-parser STATIC
-        ${sparql-GENERATED_SRC}
-        )
+        ${ANTLR_Sparql_CXX_OUTPUTS})
 
 set_target_properties(sparql-parser PROPERTIES
         CXX_STANDARD 17)
 
+target_link_libraries(sparql-parser antlr4_static)
 
-target_link_libraries(sparql-parser STATIC antlr4_static)
 
 add_dependencies(sparql-parser
-        GenerateParser
         antlr4_runtime)
 
 target_include_directories(sparql-parser PRIVATE
@@ -92,13 +73,14 @@ configure_file(cmake/dummy-config.cmake.in sparql-parser-config.cmake @ONLY)
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(sparql-parser-config-version.cmake COMPATIBILITY SameMajorVersion)
 
+
 # install and export target
-install(TARGETS sparql-parser
+install(TARGETS  sparql-parser
         EXPORT sparql-parser-targets
-        ARCHIVE DESTINATION lib/static)
+        ARCHIVE DESTINATION lib)
 
 
-install(DIRECTORY "${PROJECT_SOURCE_DIR}/generated/"
+install(DIRECTORY "${ANTLR_Sparql_OUTPUT_DIR}"
         DESTINATION "include/sparql-parser"
         FILES_MATCHING PATTERN "*.h"
         )
@@ -113,8 +95,8 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparql-parser-config-version.cmake DES
 
 if (EXISTS LICENSE.txt)
     install(FILES LICENSE.txt
-            DESTINATION "share/doc/libantlr4")
+            DESTINATION "share/doc/sparql-parser")
 elseif (EXISTS ../../LICENSE.txt)
     install(FILES ../../LICENSE.txt
-            DESTINATION "share/doc/libantlr4")
+            DESTINATION "share/doc/sparql-parser")
 endif ()

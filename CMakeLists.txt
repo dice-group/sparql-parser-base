@@ -79,10 +79,10 @@ add_dependencies(sparql-parser
         GenerateParser
         antlr4_runtime)
 
-target_include_directories(sparql-parser PRIVATE
-        ${ANTLR4_INCLUDE_DIRS}
-        ${sparql-GENERATED_DIR}
-        )
+#target_include_directories(sparql-parser PRIVATE
+#        ${ANTLR4_INCLUDE_DIRS}
+#        ${sparql-GENERATED_DIR}
+#        )
 
 
 target_link_libraries(sparql-parser antlr4_static)
@@ -90,7 +90,7 @@ set_target_properties(sparql-parser PROPERTIES
         CXX_STANDARD 17)
 
 
-include_directories(sparql-parser PRIVATE
+target_include_directories(sparql-parser PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/
         ${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/src/misc
         ${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/src/atn
@@ -114,9 +114,8 @@ install(TARGETS sparql-parser
         EXPORT sparql-parser-targets)
 
 
-install(DIRECTORY "${PROJECT_SOURCE_DIR}/sparql_Grammer/generated/"
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/generated/"
         DESTINATION "include/sparql-parser"
-        #        COMPONENT dev
         FILES_MATCHING PATTERN "*.h"
         )
 
@@ -129,7 +128,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparql-parser-config-version.cmake DES
 
 
 install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/"
-        DESTINATION "include/sparql-parser/"
+        DESTINATION "include/"
         #        COMPONENT dev
         FILES_MATCHING PATTERN "*.h"
         )

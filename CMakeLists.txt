@@ -45,12 +45,13 @@ find_package(ANTLR REQUIRED)
 antlr_target(Sparql Sparql.g4 LEXER PARSER LISTENER VISITOR PACKAGE Dice::tentris::sparql::parser)
 
 # include generated files in project environment
-include_directories(${ANTLR_SparqlLexer_OUTPUT_DIR})
-include_directories(${ANTLR_SparqlParser_OUTPUT_DIR})
+include_directories(${ANTLR_Sparql_OUTPUT_DIR})
 
 
 add_library(sparql-parser STATIC
         ${ANTLR_Sparql_CXX_OUTPUTS})
+
+add_dependencies(sparql-parser antlr4_static)
 
 set_target_properties(sparql-parser PROPERTIES
         CXX_STANDARD 17)
@@ -91,7 +92,10 @@ install(DIRECTORY
         FILES_MATCHING PATTERN "*.h"
         )
 
+
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparql-parser-config-version.cmake DESTINATION "share/sparql-parser/cmake")
+
+
 
 if (EXISTS LICENSE.txt)
     install(FILES LICENSE.txt

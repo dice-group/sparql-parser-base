@@ -74,20 +74,14 @@ set_target_properties(sparql-parser PROPERTIES
         CXX_STANDARD 17)
 
 
-target_link_libraries(sparql-parser antlr4_static)
+target_link_libraries(sparql-parser STATIC antlr4_static)
 
 add_dependencies(sparql-parser
         GenerateParser
         antlr4_runtime)
-message("da: ${ANTLR4_INCLUDE_DIRS}")
+
 target_include_directories(sparql-parser PRIVATE
         ${ANTLR4_INCLUDE_DIRS}
-#        ${ANTLR4_INCLUDE_DIRS}/
-#        ${ANTLR4_INCLUDE_DIRS}/misc/
-#        ${ANTLR4_INCLUDE_DIRS}/atn/
-#        ${ANTLR4_INCLUDE_DIRS}/dfa/
-#        ${ANTLR4_INCLUDE_DIRS}/tree/
-#        ${ANTLR4_INCLUDE_DIRS}/support/
         ${PROJECT_SOURCE_DIR}/generated
         )
 
@@ -100,8 +94,8 @@ write_basic_package_version_file(sparql-parser-config-version.cmake COMPATIBILIT
 
 # install and export target
 install(TARGETS sparql-parser
-        DESTINATION lib
-        EXPORT sparql-parser-targets)
+        EXPORT sparql-parser-targets
+        ARCHIVE DESTINATION lib/static)
 
 
 install(DIRECTORY "${PROJECT_SOURCE_DIR}/generated/"
@@ -110,7 +104,7 @@ install(DIRECTORY "${PROJECT_SOURCE_DIR}/generated/"
         )
 
 install(DIRECTORY
-"${ANTLR4_INCLUDE_DIRS}/"
+        "${ANTLR4_INCLUDE_DIRS}/"
         DESTINATION "include/"
         FILES_MATCHING PATTERN "*.h"
         )

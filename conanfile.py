@@ -23,9 +23,9 @@ class sparqlParserBase(ConanFile):
 
     def package(self):
         cmake = CMake(self)
-
         cmake.configure()
         cmake.install()
+
 
     def imports(self):
         self.copy("license*", dst="licenses", folder=True, ignore_case=True)

@@ -30,7 +30,6 @@ endif ()
 
 
 
-# Java is not necessary if building without demos.
 find_package(Java COMPONENTS Runtime REQUIRED)
 
 
@@ -79,10 +78,6 @@ add_dependencies(sparql-parser
         GenerateParser
         antlr4_runtime)
 
-#target_include_directories(sparql-parser PRIVATE
-#        ${ANTLR4_INCLUDE_DIRS}
-#        ${sparql-GENERATED_DIR}
-#        )
 
 
 target_link_libraries(sparql-parser antlr4_static)
@@ -119,17 +114,11 @@ install(DIRECTORY "${PROJECT_SOURCE_DIR}/generated/"
         FILES_MATCHING PATTERN "*.h"
         )
 
-
-# to install antlr4 runtime target
-# TODO: may not be necessary
-# TODO: please test if the conan package without does also work properly
-set(ANTLR4_INSTALL ON)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparql-parser-config-version.cmake DESTINATION "share/sparql-parser/cmake")
 
 
 install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/runtime/Cpp/runtime/src/"
         DESTINATION "include/"
-        #        COMPONENT dev
         FILES_MATCHING PATTERN "*.h"
         )
 

@@ -94,8 +94,11 @@ else()
   ExternalProject_Add(
       antlr4_runtime
       PREFIX antlr4_runtime
+      GIT_SHALLOW 1
+      GIT_PROGRESS 1
       GIT_REPOSITORY ${ANTLR4_GIT_REPOSITORY}
       GIT_TAG ${ANTLR4_TAG}
+      UPDATE_COMMAND ""
       DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}
       BUILD_COMMAND ""
       BUILD_IN_SOURCE 1

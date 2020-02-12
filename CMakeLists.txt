@@ -79,6 +79,7 @@ install(TARGETS  sparql-parser
         ARCHIVE DESTINATION lib)
 
 
+
 install(DIRECTORY "${ANTLR_Sparql_OUTPUT_DIR}"
         DESTINATION "include/sparql-parser"
         FILES_MATCHING PATTERN "*.h"

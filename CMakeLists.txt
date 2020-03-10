@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(sparql-parser VERSION 0.9.0)
+project(sparql-parser-base VERSION 0.1.0)
 
 if (NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
     if (NOT CMAKE_BUILD_TYPE)
@@ -47,41 +47,41 @@ antlr_target(Sparql Sparql.g4 LEXER PARSER LISTENER VISITOR PACKAGE Dice::tentri
 # include generated files in project environment
 include_directories(${ANTLR_Sparql_OUTPUT_DIR})
 
-add_library(sparql-parser STATIC
+add_library(sparql-parser-base
         ${ANTLR_Sparql_CXX_OUTPUTS})
 
 
-set_target_properties(sparql-parser PROPERTIES
+set_target_properties(sparql-parser-base PROPERTIES
         CXX_STANDARD 17)
 
-target_link_libraries(sparql-parser PUBLIC antlr4_static)
+target_link_libraries(sparql-parser-base PUBLIC antlr4_static)
 
 
-add_dependencies(sparql-parser
+add_dependencies(sparql-parser-base
         antlr4_static)
 
-target_include_directories(sparql-parser PRIVATE
+target_include_directories(sparql-parser-base PUBLIC
         ${ANTLR4_INCLUDE_DIRS}
         ${PROJECT_SOURCE_DIR}/generated
         )
 
 # Make package findable
-configure_file(cmake/dummy-config.cmake.in sparql-parser-config.cmake @ONLY)
+configure_file(cmake/dummy-config.cmake.in sparql-parser-base-config.cmake @ONLY)
+configure_file(antlr4cmake/antlr4-runtime.cmake.in antlr4-runtime-config.cmake @ONLY)
 
 # Enable version checks in find_package
 include(CMakePackageConfigHelpers)
-write_basic_package_version_file(sparql-parser-config-version.cmake COMPATIBILITY SameMajorVersion)
-
+write_basic_package_version_file(sparql-parser-base-config-version.cmake COMPATIBILITY SameMajorVersion)
+write_basic_package_version_file(antlr4-runtime-config-version.cmake COMPATIBILITY SameMajorVersion)
 
 # install and export target
-install(TARGETS  sparql-parser
-        EXPORT sparql-parser-targets
+install(TARGETS  sparql-parser-base
+        EXPORT sparql-parser-base-targets
         ARCHIVE DESTINATION lib)
 
 
-
 install(DIRECTORY "${ANTLR_Sparql_OUTPUT_DIR}"
-        DESTINATION "include/sparql-parser"
+        DESTINATION "include/"
         FILES_MATCHING PATTERN "*.h"
         )
 
@@ -91,15 +91,19 @@ install(DIRECTORY
         FILES_MATCHING PATTERN "*.h"
         )
 
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/antlr4-runtime-config-version.cmake DESTINATION "share/antlr4-runtime/cmake")
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparql-parser-config-version.cmake DESTINATION "share/sparql-parser/cmake")
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparql-parser-base-config-version.cmake DESTINATION "share/sparql-parser-base/cmake")
 
 
 
 if (EXISTS LICENSE.txt)
     install(FILES LICENSE.txt
-            DESTINATION "share/doc/sparql-parser")
+            DESTINATION "share/doc/sparql-parser-base")
 elseif (EXISTS ../../LICENSE.txt)
     install(FILES ../../LICENSE.txt
-            DESTINATION "share/doc/sparql-parser")
+            DESTINATION "share/doc/sparql-parser-base")
 endif ()
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/LICENSE.txt
+        DESTINATION "share/licenses/antlr4-runtime")

@@ -17,7 +17,8 @@ class sparqlParserBase(ConanFile):
         "CMakeLists.txt",
         "antlr4cmake/*",
         "cmake/*",
-        "Sparql.g4")
+        "SparqlLexer.g4",
+         "SparqlParser.g4")
     no_copy_source = True
 
     def package(self):

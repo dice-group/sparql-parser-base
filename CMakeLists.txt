@@ -42,13 +42,22 @@ include_directories(${ANTLR4_INCLUDE_DIRS})
 
 # add macros to generate ANTLR Cpp code from grammar
 find_package(ANTLR REQUIRED)
-antlr_target(Sparql Sparql.g4 LEXER PARSER LISTENER VISITOR PACKAGE Dice::tentris::sparql::parser)
+antlr_target(SparqlLexer SparqlLexer.g4 LEXER
+        PACKAGE Dice::tentris::sparql::parser)
+antlr_target(SparqlParser SparqlParser.g4 PARSER
+        PACKAGE Dice::tentris::sparql::parser
+        DEPENDS_ANTLR SparqlLexer
+        LISTENER
+        VISITOR
+        COMPILE_FLAGS -lib ${ANTLR_SparqlLexer_OUTPUT_DIR})
 
 # include generated files in project environment
-include_directories(${ANTLR_Sparql_OUTPUT_DIR})
+include_directories(${ANTLR_SparqlLexer_OUTPUT_DIR})
+include_directories(${ANTLR_SparqlParser_OUTPUT_DIR})
 
 add_library(sparql-parser-base
-        ${ANTLR_Sparql_CXX_OUTPUTS})
+        ${ANTLR_SparqlLexer_CXX_OUTPUTS}
+        ${ANTLR_SparqlParser_CXX_OUTPUTS})
 
 
 set_target_properties(sparql-parser-base PROPERTIES
@@ -80,7 +89,12 @@ install(TARGETS  sparql-parser-base
         ARCHIVE DESTINATION lib)
 
 
-install(DIRECTORY "${ANTLR_Sparql_OUTPUT_DIR}"
+install(DIRECTORY "${ANTLR_SparqlParser_OUTPUT_DIR}"
+        DESTINATION "include/"
+        FILES_MATCHING PATTERN "*.h"
+        )
+
+install(DIRECTORY "${ANTLR_SparqlLexer_OUTPUT_DIR}"
         DESTINATION "include/"
         FILES_MATCHING PATTERN "*.h"
         )

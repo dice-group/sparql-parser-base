@@ -55,7 +55,11 @@ subSelect
     ;
     	
 selectClause
-    : SELECT (DISTINCT | REDUCED)? (selectVariables+ | '*')
+    : SELECT selectModifier? (selectVariables+ | '*')
+    ;
+
+selectModifier
+    : DISTINCT | REDUCED
     ;
 
 selectVariables

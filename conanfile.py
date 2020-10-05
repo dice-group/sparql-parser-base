@@ -3,7 +3,7 @@ from conans import ConanFile, CMake,tools
 
 class sparqlParserBase(ConanFile):
     name = "sparql-parser-base"
-    version = "0.1.0"
+    version = "0.1.1"
     author = "DICE Group <info@dice-research.org>"
     description = "A ANTLR4 base for SPARQL parser."
     homepage = "https://github.com/dice-group/sparql-parser"

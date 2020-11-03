@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.13)
 
 project(sparql-parser-base VERSION 0.1.0)
 
+set(sparql-parser-base_INSTALL_INCLUDE_DIR "include" CACHE STRING "The installation include directory")
+set(sparql-parser-base_INSTALL_CMAKE_DIR "share/rdf_parser/cmake" CACHE STRING "The installation cmake directory")
+
 if (NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
     if (NOT CMAKE_BUILD_TYPE)
         set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
@@ -37,15 +40,9 @@ endif ()
 SET(ANTLR4_INSTALL ON)
 include(ExternalAntlr4Cpp)
 
-# add antrl4cpp artifacts to project environment
-include_directories(${ANTLR4_INCLUDE_DIRS})
-
 # add macros to generate ANTLR Cpp code from grammar
 find_package(ANTLR REQUIRED)
 antlr_target(Sparql Sparql.g4 LEXER PARSER LISTENER VISITOR PACKAGE Dice::tentris::sparql::parser)
-
-# include generated files in project environment
-include_directories(${ANTLR_Sparql_OUTPUT_DIR})
 
 add_library(sparql-parser-base
         ${ANTLR_Sparql_CXX_OUTPUTS})
@@ -62,7 +59,7 @@ add_dependencies(sparql-parser-base
 
 target_include_directories(sparql-parser-base PUBLIC
         ${ANTLR4_INCLUDE_DIRS}
-        ${PROJECT_SOURCE_DIR}/generated
+        ${ANTLR_Sparql_OUTPUT_DIR}/..
         )
 
 # Make package findable

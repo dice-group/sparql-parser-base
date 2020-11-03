@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.15)
-project(sparql_parser VERSION 0.1.0)
-set(CMAKE_CXX_STANDARD 17)
+cmake_minimum_required(VERSION 3.13)
+
+project(sparql-parser-base VERSION 0.1.0)
 
 if (NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
     if (NOT CMAKE_BUILD_TYPE)
@@ -10,14 +10,6 @@ endif ()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fomit-frame-pointer -momit-leaf-frame-pointer")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++abi")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -v")
-
-    set(CMAKE_THREAD_LIBS_INIT "-lpthread")
-    set(CMAKE_HAVE_THREADS_LIBRARY 1)
-    set(CMAKE_USE_WIN32_THREADS_INIT 0)
-    set(CMAKE_USE_PTHREADS_INIT 1)
-    set(THREADS_PREFER_PTHREAD_FLAG ON)
 else ()
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fomit-frame-pointer")
 endif ()
@@ -26,70 +18,92 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -g -O0")
 
 # build antlr4
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/antlr4cmake)
-set(ANTLR4_TAG "4.8")
-if (NOT EXISTS "${PROJECT_BINARY_DIR}/antlr-${ANTLR4_TAG}-complete.jar")
-    file(DOWNLOAD https://www.antlr.org/download/antlr-${ANTLR4_TAG}-complete.jar ${PROJECT_BINARY_DIR}/antlr-${ANTLR4_TAG}-complete.jar SHOW_PROGRESS)
-endif ()
-set(ANTLR_EXECUTABLE ${PROJECT_BINARY_DIR}/antlr-${ANTLR4_TAG}-complete.jar)
+
 set(ANTLR4_WITH_STATIC_CRT OFF)
 add_definitions(-DANTLR4CPP_STATIC)
+
+if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(UUID REQUIRED uuid)
+endif ()
+
+find_package(Java COMPONENTS Runtime REQUIRED)
+
+set(ANTLR4_TAG "4.8")
+set(ANTLR_EXECUTABLE "${PROJECT_BINARY_DIR}/antlr-${ANTLR4_TAG}-complete.jar")
+if (NOT EXISTS "${ANTLR_EXECUTABLE}")
+    file(DOWNLOAD https://www.antlr.org/download/antlr-${ANTLR4_TAG}-complete.jar ${ANTLR_EXECUTABLE} SHOW_PROGRESS)
+endif ()
+SET(ANTLR4_INSTALL ON)
 include(ExternalAntlr4Cpp)
+
+# add antrl4cpp artifacts to project environment
 include_directories(${ANTLR4_INCLUDE_DIRS})
 
+# add macros to generate ANTLR Cpp code from grammar
 find_package(ANTLR REQUIRED)
+antlr_target(Sparql Sparql.g4 LEXER PARSER LISTENER VISITOR PACKAGE Dice::tentris::sparql::parser)
 
-antlr_target(SPARQLGrammar
-        Sparql.g4
-        LEXER PARSER LISTENER VISITOR
-        PACKAGE DICE::tentris::sparql)
+# include generated files in project environment
+include_directories(${ANTLR_Sparql_OUTPUT_DIR})
 
-# installation directories
-set(antlr4_sparql_INSTALL_INCLUDE_DIR "include" CACHE STRING "The installation include directory")
-set(antlr4_sparql_INSTALL_CMAKE_DIR "share/antlr4_sparql/cmake" CACHE STRING "The installation cmake directory")
+add_library(sparql-parser-base
+        ${ANTLR_Sparql_CXX_OUTPUTS})
 
 
-set(ANTLR_SPARQLGrammar_headers ${ANTLR_SPARQLGrammar_CXX_OUTPUTS})
-list(FILTER ANTLR_SPARQLGrammar_headers INCLUDE REGEX ".*\\.h")
-file(COPY ${ANTLR_SPARQLGrammar_headers} DESTINATION ${CMAKE_SOURCE_DIR}/include)
+set_target_properties(sparql-parser-base PROPERTIES
+        CXX_STANDARD 17)
 
-set(ANTLR_SPARQLGrammar_source ${ANTLR_SPARQLGrammar_CXX_OUTPUTS})
-list(FILTER ANTLR_SPARQLGrammar_source INCLUDE REGEX ".*\\.cpp")
-file(COPY ${ANTLR_SPARQLGrammar_source} DESTINATION ${CMAKE_SOURCE_DIR}/source)
+target_link_libraries(sparql-parser-base PUBLIC antlr4_static)
 
-add_library(antlr4_sparql
-        ${ANTLR_SPARQLGrammar_source}
-        )
 
-target_include_directories(antlr4_sparql
-        PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-        PRIVATE
+add_dependencies(sparql-parser-base
+        antlr4_static)
+
+target_include_directories(sparql-parser-base PUBLIC
         ${ANTLR4_INCLUDE_DIRS}
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${PROJECT_SOURCE_DIR}/generated
         )
 
-
-target_link_libraries(antlr4_sparql antlr4_static)
-add_dependencies(antlr4_sparql antlr4_static)
-
-configure_file(cmake/dummy-config.cmake.in antlr4_sparql-config.cmake @ONLY)
+# Make package findable
+configure_file(cmake/dummy-config.cmake.in sparql-parser-base-config.cmake @ONLY)
+configure_file(antlr4cmake/antlr4-runtime.cmake.in antlr4-runtime-config.cmake @ONLY)
 
 # Enable version checks in find_package
 include(CMakePackageConfigHelpers)
-write_basic_package_version_file(antlr4_sparql-config-version.cmake COMPATIBILITY SameMajorVersion)
+write_basic_package_version_file(sparql-parser-base-config-version.cmake COMPATIBILITY SameMajorVersion)
+write_basic_package_version_file(antlr4-runtime-config-version.cmake COMPATIBILITY SameMajorVersion)
 
 # install and export target
-install(TARGETS antlr4_sparql EXPORT antlr4_sparql-targets)
+install(TARGETS  sparql-parser-base
+        EXPORT sparql-parser-base-targets
+        ARCHIVE DESTINATION lib)
 
-install(EXPORT antlr4_sparql-targets
-        FILE antlr4_sparql-config.cmake
-        NAMESPACE Dice::
-        DESTINATION ${antlr4_sparql_INSTALL_CMAKE_DIR}
+
+install(DIRECTORY "${ANTLR_Sparql_OUTPUT_DIR}"
+        DESTINATION "include/"
+        FILES_MATCHING PATTERN "*.h"
         )
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/antlr4_sparql-config-version.cmake DESTINATION ${antlr4_sparql_INSTALL_CMAKE_DIR})
-install(DIRECTORY include/ DESTINATION ${antlr4_sparql_INSTALL_INCLUDE_DIR})
+install(DIRECTORY
+        "${ANTLR4_INCLUDE_DIRS}/"
+        DESTINATION "include/"
+        FILES_MATCHING PATTERN "*.h"
+        )
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/antlr4_sparql-config-version.cmake DESTINATION ${antlr4_sparql_INSTALL_CMAKE_DIR})
-install(DIRECTORY thirdparty/cppitertools/ DESTINATION ${antlr4_sparql_INSTALL_INCLUDE_DIR})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/antlr4-runtime-config-version.cmake DESTINATION "share/antlr4-runtime/cmake")
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparql-parser-base-config-version.cmake DESTINATION "share/sparql-parser-base/cmake")
+
+
+
+if (EXISTS LICENSE.txt)
+    install(FILES LICENSE.txt
+            DESTINATION "share/doc/sparql-parser-base")
+elseif (EXISTS ../../LICENSE.txt)
+    install(FILES ../../LICENSE.txt
+            DESTINATION "share/doc/sparql-parser-base")
+endif ()
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/LICENSE.txt
+        DESTINATION "share/licenses/antlr4-runtime")

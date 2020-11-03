@@ -58,7 +58,7 @@ Output variable  | Meaning
 
 To use the Package you must insert a 
 ```cmake
-find_package(antlr4-runtime REQUIRED)
+find_package(ANTLR_runtime REQUIRED)
 ```
 line in your `CMakeList.txt` file.
 

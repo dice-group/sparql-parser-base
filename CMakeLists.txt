@@ -43,9 +43,9 @@ include_directories(${ANTLR4_INCLUDE_DIRS})
 # add macros to generate ANTLR Cpp code from grammar
 find_package(ANTLR REQUIRED)
 antlr_target(SparqlLexer SparqlLexer.g4 LEXER
-        PACKAGE Dice::tentris::sparqlParserBase)
+        PACKAGE Dice::tentris::SparqlParserBase)
 antlr_target(SparqlParser SparqlParser.g4 PARSER
-        PACKAGE Dice::tentris::sparqlParserBase
+        PACKAGE Dice::tentris::SparqlParserBase
         DEPENDS_ANTLR SparqlLexer
         LISTENER
         VISITOR

@@ -21,7 +21,7 @@ make -j sparql-parser-base
 
 There are two project-specific options you can set for CMake:
 
-- `SPARQL_BASE_PARSER_WITH_LIBCXX`: Building with libc++ (in Linux). To enable with: `-DWITH_LIBCXX=On`
+- `SPARQL_BASE_PARSER_WITH_LIBCXX`: Building with libc++ (in Linux). To enable with: `-DSPARQL_BASE_PARSER_WITH_LIBCXX=On`
 - `SPARQL_BASE_PARSER_MARCH`: Allows you to set the -march parameter. If you are building for your local machine, you should set it to `-DSPARQL_BASE_PARSER_MARCH=native` 
 
 ## conan

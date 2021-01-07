@@ -25,21 +25,19 @@ COPY cmake cmake
 COPY CMakeLists.txt CMakeLists.txt
 COPY conanfile.py conanfile.py
 COPY LICENSE LICENSE
-COPY Sparql.g4 Sparql.g4
+COPY SparqlLexer.g4 SparqlLexer.g4
+COPY SparqlParser.g4 SparqlParser.g4
 
 WORKDIR /sparql-parser-base/build_gcc10
 RUN cmake -DCMAKE_BUILD_TYPE=Release ..
 RUN make -j sparql-parser-base
 
-#doesn't work right now
-#WORKDIR /sparql-parser-base/build_clang11
-#RUN export CXX="clang++-11" && export CC="clang-11" && \
-#    cmake -DCMAKE_BUILD_TYPE=Release ..
-#RUN export CXX="clang++-11" && export CC="clang-11" && \
-#    make -j sparql-parser-base
-##build
+WORKDIR /sparql-parser-base/build_clang11
+RUN export CXX="clang++-11" && export CC="clang-11" && \
+    cmake -DCMAKE_BUILD_TYPE=Release ..
+RUN export CXX="clang++-11" && export CC="clang-11" && \
+    make -j sparql-parser-base
 
 WORKDIR /sparql-parser-base
-RUN conan create . "sparql-parser-base/0.1.0@dice-group/stable" --build missing --profile gcc10
-#doesn't work right now
-#RUN conan create . "sparql-parser-base/0.1.0@dice-group/stable" --build missing --profile clang11
+RUN conan create . "sparql-parser-base/0.1.1@dice-group/stable" --build missing --profile gcc10
+RUN conan create . "sparql-parser-base/0.1.1@dice-group/stable" --build missing --profile clang11

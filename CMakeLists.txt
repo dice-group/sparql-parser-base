@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(sparql-parser-base VERSION 0.1.0)
+project(sparql-parser-base VERSION 0.1.1)
 
 if (NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
     if (NOT CMAKE_BUILD_TYPE)
@@ -15,6 +15,15 @@ else ()
 endif ()
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -g -O0")
 
+if(NOT DEFINED ${TENTRIS_MARCH})
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=x86-64")
+else()
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=${TENTRIS_MARCH}")
+endif()
+
+option(SPARQL_BASE_PARSER_WITH_LIBCXX "Building with libc++ (in Linux). To enable with: -DWITH_LIBCXX=On" Off)
+
+option(SPARQL_BASE_PARSER_MARCH "Allows you to set the -march parameter. If you are building for your local machine, you should set it to -DSPARQL_BASE_PARSER_MARCH=native" x86-64)
 
 # build antlr4
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/antlr4cmake)
@@ -29,7 +38,7 @@ endif ()
 
 find_package(Java COMPONENTS Runtime REQUIRED)
 
-set(ANTLR4_TAG "4.8")
+set(ANTLR4_TAG "4.9.1")
 set(ANTLR_EXECUTABLE "${PROJECT_BINARY_DIR}/antlr-${ANTLR4_TAG}-complete.jar")
 if (NOT EXISTS "${ANTLR_EXECUTABLE}")
     file(DOWNLOAD https://www.antlr.org/download/antlr-${ANTLR4_TAG}-complete.jar ${ANTLR_EXECUTABLE} SHOW_PROGRESS)
@@ -42,13 +51,22 @@ include_directories(${ANTLR4_INCLUDE_DIRS})
 
 # add macros to generate ANTLR Cpp code from grammar
 find_package(ANTLR REQUIRED)
-antlr_target(Sparql Sparql.g4 LEXER PARSER LISTENER VISITOR PACKAGE Dice::tentris::sparql::parser)
+antlr_target(SparqlLexer SparqlLexer.g4 LEXER
+        PACKAGE Dice::tentris::SparqlParserBase)
+antlr_target(SparqlParser SparqlParser.g4 PARSER
+        PACKAGE Dice::tentris::SparqlParserBase
+        DEPENDS_ANTLR SparqlLexer
+        LISTENER
+        VISITOR
+        COMPILE_FLAGS -lib ${ANTLR_SparqlLexer_OUTPUT_DIR})
 
 # include generated files in project environment
-include_directories(${ANTLR_Sparql_OUTPUT_DIR})
+include_directories(${ANTLR_SparqlLexer_OUTPUT_DIR})
+include_directories(${ANTLR_SparqlParser_OUTPUT_DIR})
 
 add_library(sparql-parser-base
-        ${ANTLR_Sparql_CXX_OUTPUTS})
+        ${ANTLR_SparqlLexer_CXX_OUTPUTS}
+        ${ANTLR_SparqlParser_CXX_OUTPUTS})
 
 
 set_target_properties(sparql-parser-base PROPERTIES
@@ -80,7 +98,12 @@ install(TARGETS  sparql-parser-base
         ARCHIVE DESTINATION lib)
 
 
-install(DIRECTORY "${ANTLR_Sparql_OUTPUT_DIR}"
+install(DIRECTORY "${ANTLR_SparqlParser_OUTPUT_DIR}"
+        DESTINATION "include/"
+        FILES_MATCHING PATTERN "*.h"
+        )
+
+install(DIRECTORY "${ANTLR_SparqlLexer_OUTPUT_DIR}"
         DESTINATION "include/"
         FILES_MATCHING PATTERN "*.h"
         )

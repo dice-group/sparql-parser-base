@@ -1,10 +1,10 @@
 # SPARQL-parser-base
 
-This repository generates a [ANTLR-v4](https://github.com/antlr/antlr4)-based [SPARQL 1.0](https://www.w3.org/TR/rdf-sparql-query/) parser in C++. The ANTLR v4 code generator is called by CMake. 
+This repository generates a [ANTLR-v4](https://github.com/antlr/antlr4) -based [SPARQL 1.1](https://www.w3.org/TR/sparql11-overview/) parser in C++. The ANTLR v4 code generator is called by CMake.
 
 ## requirements
 
-see [Dockerfile](Dockerfile). Currently builds only with gcc. 
+see [Dockerfile](Dockerfile). 
 
 ## build it
 
@@ -19,6 +19,11 @@ cmake  -DCMAKE_BUILD_TYPE=Release ..
 make -j sparql-parser-base
 ```
 
+There are two project-specific options you can set for CMake:
+
+- `SPARQL_BASE_PARSER_WITH_LIBCXX`: Building with libc++ (in Linux). To enable with: `-DWITH_LIBCXX=On`
+- `SPARQL_BASE_PARSER_MARCH`: Allows you to set the -march parameter. If you are building for your local machine, you should set it to `-DSPARQL_BASE_PARSER_MARCH=native` 
+
 ## conan
 
 To use it with [conan](https://conan.io/) you need to add the repository:
@@ -26,4 +31,4 @@ To use it with [conan](https://conan.io/) you need to add the repository:
 conan remote add dice-group https://api.bintray.com/conan/dice-group/tentris
 ```
 
-To use it add `sparql-parser-base/0.1.0@dice-group/stable` to your conan file. 
+To use it add `sparql-parser-base/0.1.1@dice-group/stable` to your conan file. 

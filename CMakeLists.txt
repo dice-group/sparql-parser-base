@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(sparql-parser-base VERSION 0.1.0)
+project(sparql-parser-base VERSION 0.1.1)
 
 if (NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
     if (NOT CMAKE_BUILD_TYPE)
@@ -15,6 +15,15 @@ else ()
 endif ()
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -g -O0")
 
+if(NOT DEFINED ${TENTRIS_MARCH})
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=x86-64")
+else()
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=${TENTRIS_MARCH}")
+endif()
+
+option(SPARQL_BASE_PARSER_WITH_LIBCXX "Building with libc++ (in Linux). To enable with: -DWITH_LIBCXX=On" Off)
+
+option(SPARQL_BASE_PARSER_MARCH "Allows you to set the -march parameter. If you are building for your local machine, you should set it to -DSPARQL_BASE_PARSER_MARCH=native" x86-64)
 
 # build antlr4
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/antlr4cmake)

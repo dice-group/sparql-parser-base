@@ -38,7 +38,7 @@ endif ()
 
 find_package(Java COMPONENTS Runtime REQUIRED)
 
-set(ANTLR4_TAG "4.8")
+set(ANTLR4_TAG "4.9.1")
 set(ANTLR_EXECUTABLE "${PROJECT_BINARY_DIR}/antlr-${ANTLR4_TAG}-complete.jar")
 if (NOT EXISTS "${ANTLR_EXECUTABLE}")
     file(DOWNLOAD https://www.antlr.org/download/antlr-${ANTLR4_TAG}-complete.jar ${ANTLR_EXECUTABLE} SHOW_PROGRESS)

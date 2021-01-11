@@ -21,7 +21,7 @@ else()
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=${TENTRIS_MARCH}")
 endif()
 
-option(SPARQL_BASE_PARSER_WITH_LIBCXX "Building with libc++ (in Linux). To enable with: -DWITH_LIBCXX=On" Off)
+option(SPARQL_BASE_PARSER_WITH_LIBCXX "Building with libc++ (in Linux). To enable with: -DSPARQL_BASE_PARSER_WITH_LIBCXX=On" Off)
 
 option(SPARQL_BASE_PARSER_MARCH "Allows you to set the -march parameter. If you are building for your local machine, you should set it to -DSPARQL_BASE_PARSER_MARCH=native" x86-64)
 

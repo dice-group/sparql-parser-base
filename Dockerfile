@@ -25,19 +25,16 @@ COPY cmake cmake
 COPY CMakeLists.txt CMakeLists.txt
 COPY conanfile.py conanfile.py
 COPY LICENSE LICENSE
-COPY SparqlLexer.g4 SparqlLexer.g4
-COPY SparqlParser.g4 SparqlParser.g4
-
-WORKDIR /sparql-parser-base/build_gcc10
-RUN cmake -DCMAKE_BUILD_TYPE=Release ..
-RUN make -j sparql-parser-base
-
-WORKDIR /sparql-parser-base/build_clang11
-RUN export CXX="clang++-11" && export CC="clang-11" && \
-    cmake -DCMAKE_BUILD_TYPE=Release ..
-RUN export CXX="clang++-11" && export CC="clang-11" && \
-    make -j sparql-parser-base
+COPY SPARQL_1.0 SPARQL_1.0
+COPY SPARQL_1.1 SPARQL_1.1
 
 WORKDIR /sparql-parser-base
-RUN conan create . "sparql-parser-base/0.1.1@dice-group/stable" --build missing --profile gcc10
-RUN conan create . "sparql-parser-base/0.1.1@dice-group/stable" --build missing --profile clang11
+RUN conan create . "sparql-parser-base/test1@dice-group/stable" --build missing --profile gcc10
+RUN conan create . "sparql-parser-base/test2dice-group/stable" --build missing --profile gcc10 -o sparql-parser-base:sparql_version="1.0"
+
+ENV CXX="clang++-11"
+ENV CC="clang-11"
+
+WORKDIR /sparql-parser-base
+RUN conan create . "sparql-parser-base/test3@dice-group/stable" --build missing --profile clang11
+RUN conan create . "sparql-parser-base/test4@dice-group/stable" --build missing --profile clang11 -o sparql-parser-base:sparql_version="1.0"

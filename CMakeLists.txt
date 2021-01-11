@@ -49,6 +49,19 @@ include(ExternalAntlr4Cpp)
 # add antrl4cpp artifacts to project environment
 include_directories(${ANTLR4_INCLUDE_DIRS})
 
+if(NOT DEFINED ${SPARQL_BASE_PARSER_SPARQL_VERSION})
+    set(SPARQL_BASE_PARSER_SPARQL_VERSION "1.1")
+else()
+    if (NOT (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.0" OR ${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1"))
+        message(FATAL_ERROR "SPARQL_BASE_PARSER_SPARQL_VERSION must be \"1.1\" or \"1.0\" but is ${SPARQL_BASE_PARSER_SPARQL_VERSION}")
+    endif()
+endif()
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/SPARQL_${SPARQL_BASE_PARSER_SPARQL_VERSION}/SparqlParser.g4
+        DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/SPARQL_${SPARQL_BASE_PARSER_SPARQL_VERSION}/SparqlLexer.g4
+        DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/)
+
 # add macros to generate ANTLR Cpp code from grammar
 find_package(ANTLR REQUIRED)
 antlr_target(SparqlLexer SparqlLexer.g4 LEXER

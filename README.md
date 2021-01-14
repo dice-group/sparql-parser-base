@@ -25,7 +25,7 @@ There are three project-specific options you can set for CMake:
 
 - `SPARQL_BASE_PARSER_WITH_LIBCXX`: Building with libc++ (in Linux). To enable with: `-DSPARQL_BASE_PARSER_WITH_LIBCXX=On`
 - `SPARQL_BASE_PARSER_MARCH`: Allows you to set the -march parameter. If you are building for your local machine, you should set it to `-DSPARQL_BASE_PARSER_MARCH=native`
-- `SPARQL_BASE_PARSER_SPARQL_VERSION`: You can switch between SPARQL1.0 and SPARQL1.1 parsers being generated. The parsers for SPARQL1.0 and SPARQL1.1 are not API compatible. Default is SPARQL1.1. To generate a SPARQL1.0 instead, switch the version with: `-DSPARQL_BASE_PARSER_SPARQL_VERSION="1.0"`   
+- `SPARQL_BASE_PARSER_SPARQL_VERSION`: You can switch between SPARQL 1.0 and SPARQL1.1 parsers being generated. The parsers for SPARQL 1.0 and SPARQL 1.1 are not API compatible. Default is SPARQL 1.1. To generate a SPARQL1.0 instead, switch the version with: `-DSPARQL_BASE_PARSER_SPARQL_VERSION=1.0`   
 
 ## conan
 
@@ -34,7 +34,6 @@ To use it with [conan](https://conan.io/) you need to add the repository:
 conan remote add dice-group https://api.bintray.com/conan/dice-group/tentris
 ```
 
-To use it add `sparql-parser-base/0.2.0@dice-group/stable` to the `[requires]` section of your conan file.
-By default, this uses SPARQL1.1. 
-If you want to use SPARQL1.0 instead, add `sparql-parser-base:sparql_version=1.0` to the `[options]` section of your conan file.
-
+To use it add `sparql-parser-base/0.2.1@dice-group/stable` to the `[requires]` section of your conan file.
+By default, this uses SPARQL 1.1. 
+If you want to use SPARQL 1.0 instead, add `sparql-parser-base:sparql_version=1.0` to the `[options]` section of your conan file.

@@ -57,38 +57,61 @@ else()
     endif()
 endif()
 
+if (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1")
+    message("SPARQL 1.1")
+    set(SPARQL_BASE_PARSER_SPARQL_VERSION_ "1_1")
+else()
+    message("SPARQL 1.0")
+    set(SPARQL_BASE_PARSER_SPARQL_VERSION_ "1_0")
+endif()
+
+if (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1")
+    file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/SparqlParser_${SPARQL_BASE_PARSER_SPARQL_VERSION}.g4
+            ${CMAKE_CURRENT_SOURCE_DIR}/SparqlLexer.g4)
+    file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/SparqlParser_${SPARQL_BASE_PARSER_SPARQL_VERSION}.g4
+            ${CMAKE_CURRENT_SOURCE_DIR}/SparqlParser.g4
+            )
+else()
+    file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/SparqlParser_${SPARQL_BASE_PARSER_SPARQL_VERSION}.g4
+            ${CMAKE_CURRENT_SOURCE_DIR}/Sparql.g4
+            )
+endif()
+
 # add macros to generate ANTLR Cpp code from grammar
 find_package(ANTLR REQUIRED)
 if (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.0")
-    antlr_target(SparqlParser SparqlParser_1_0.g4 LEXER PARSER LISTENER VISITOR
-            PACKAGE Dice::tentris::sparql::parser
+    message("SPARQL 1.0")
+    antlr_target(Sparql Sparql.g4 LEXER PARSER LISTENER VISITOR
+            PACKAGE Dice::sparql_parser::base
             )
 else() # SPARQL 1.1
-    antlr_target(SparqlLexer SparqlLexer_1_1.g4 LEXER
-            PACKAGE Dice::tentris::SparqlParserBase)
-    antlr_target(SparqlParser SparqlParser_1_1.g4 PARSER
-            PACKAGE Dice::tentris::SparqlParserBase
+    antlr_target(SparqlLexer SparqlLexer.g4 LEXER
+            PACKAGE Dice::sparql_parser::base)
+    antlr_target(SparqlParser SparqlParser.g4 PARSER
+            PACKAGE Dice::sparql_parser::base
             DEPENDS_ANTLR SparqlLexer
             LISTENER
             VISITOR
             COMPILE_FLAGS -lib ${ANTLR_SparqlLexer_OUTPUT_DIR})
 endif()
 
-# include generated files in project environment
-include_directories(${ANTLR_SparqlParser_OUTPUT_DIR})
-add_library(sparql-parser-base
-        ${ANTLR_SparqlParser_CXX_OUTPUTS})
+if (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1")
+    file(REMOVE ${CMAKE_CURRENT_SOURCE_DIR}/SparqlLexer.g4)
+endif()
 
+# include generated files in project environment
 if (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1")
     add_library(sparql-parser-base
             ${ANTLR_SparqlLexer_CXX_OUTPUTS})
     include_directories(${ANTLR_SparqlLexer_OUTPUT_DIR})
+    add_library(sparql-parser-base
+            ${ANTLR_SparqlParser_CXX_OUTPUTS})
+    include_directories(${ANTLR_SparqlParser_OUTPUT_DIR})
+else()
+    include_directories(${ANTLR_Sparql_OUTPUT_DIR})
+    add_library(sparql-parser-base
+            ${ANTLR_Sparql_CXX_OUTPUTS})
 endif()
-
-
-
-
-
 
 set_target_properties(sparql-parser-base PROPERTIES
         CXX_STANDARD 17)
@@ -125,10 +148,19 @@ install(DIRECTORY "${ANTLR_SparqlParser_OUTPUT_DIR}"
         )
 
 if (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1")
-install(DIRECTORY "${ANTLR_SparqlLexer_OUTPUT_DIR}"
-        DESTINATION "include/"
-        FILES_MATCHING PATTERN "*.h"
-        )
+    install(DIRECTORY "${ANTLR_SparqlParser_OUTPUT_DIR}"
+            DESTINATION "include/"
+            FILES_MATCHING PATTERN "*.h"
+            )
+    install(DIRECTORY "${ANTLR_SparqlLexer_OUTPUT_DIR}"
+            DESTINATION "include/"
+            FILES_MATCHING PATTERN "*.h"
+            )
+else()
+    install(DIRECTORY "${ANTLR_Sparql_OUTPUT_DIR}"
+            DESTINATION "include/"
+            FILES_MATCHING PATTERN "*.h"
+            )
 endif()
 
 install(DIRECTORY

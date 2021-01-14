@@ -35,7 +35,7 @@
  * Ported to Antlr4 by Tom Everett
  */
 
-grammar SparqlParser_1_0;
+grammar Sparql;
 
 query
     : prologue ( selectQuery | constructQuery | describeQuery | askQuery ) EOF

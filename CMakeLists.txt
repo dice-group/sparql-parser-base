@@ -66,11 +66,10 @@ else()
 endif()
 
 if (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1")
-    file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/SparqlParser_${SPARQL_BASE_PARSER_SPARQL_VERSION}.g4
+    file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/SparqlLexer_${SPARQL_BASE_PARSER_SPARQL_VERSION}.g4
             ${CMAKE_CURRENT_SOURCE_DIR}/SparqlLexer.g4)
     file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/SparqlParser_${SPARQL_BASE_PARSER_SPARQL_VERSION}.g4
-            ${CMAKE_CURRENT_SOURCE_DIR}/SparqlParser.g4
-            )
+            ${CMAKE_CURRENT_SOURCE_DIR}/SparqlParser.g4)
 else()
     file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/SparqlParser_${SPARQL_BASE_PARSER_SPARQL_VERSION}.g4
             ${CMAKE_CURRENT_SOURCE_DIR}/Sparql.g4
@@ -95,17 +94,12 @@ else() # SPARQL 1.1
             COMPILE_FLAGS -lib ${ANTLR_SparqlLexer_OUTPUT_DIR})
 endif()
 
-if (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1")
-    file(REMOVE ${CMAKE_CURRENT_SOURCE_DIR}/SparqlLexer.g4)
-endif()
-
 # include generated files in project environment
 if (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1")
     add_library(sparql-parser-base
-            ${ANTLR_SparqlLexer_CXX_OUTPUTS})
-    include_directories(${ANTLR_SparqlLexer_OUTPUT_DIR})
-    add_library(sparql-parser-base
+            ${ANTLR_SparqlLexer_CXX_OUTPUTS}
             ${ANTLR_SparqlParser_CXX_OUTPUTS})
+    include_directories(${ANTLR_SparqlLexer_OUTPUT_DIR})
     include_directories(${ANTLR_SparqlParser_OUTPUT_DIR})
 else()
     include_directories(${ANTLR_Sparql_OUTPUT_DIR})

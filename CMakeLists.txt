@@ -92,12 +92,14 @@ if (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1")
     add_library(sparql-parser-base
             ${ANTLR_SparqlLexer_CXX_OUTPUTS}
             ${ANTLR_SparqlParser_CXX_OUTPUTS})
-    include_directories(${ANTLR_SparqlLexer_OUTPUT_DIR})
-    include_directories(${ANTLR_SparqlParser_OUTPUT_DIR})
+    target_include_directories(sparql-parser-base PUBLIC
+            ${ANTLR_SparqlLexer_OUTPUT_DIR}
+            ${ANTLR_SparqlParser_OUTPUT_DIR})
 else ()
-    include_directories(${ANTLR_Sparql_OUTPUT_DIR})
     add_library(sparql-parser-base
             ${ANTLR_Sparql_CXX_OUTPUTS})
+    target_include_directories(sparql-parser-base PUBLIC
+            ${ANTLR_Sparql_OUTPUT_DIR})
 endif ()
 
 set_target_properties(sparql-parser-base PROPERTIES

@@ -42,3 +42,4 @@ venv/
 /sparql-grammer/generated/
 SparqlParser.g4
 SparqlLexer.g4
+Sparql.g4

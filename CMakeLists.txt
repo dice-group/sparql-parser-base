@@ -1,18 +1,11 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(sparql-parser-base VERSION 0.2.1)
+project(sparql-parser-base VERSION 0.2.2)
 
 if (NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
     if (NOT CMAKE_BUILD_TYPE)
         set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
     endif ()
-endif ()
-
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    option(SPARQL_BASE_PARSER_WITH_LIBCXX "Building with libc++ (in Linux). To enable with: -DSPARQL_BASE_PARSER_WITH_LIBCXX=On" Off)
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fomit-frame-pointer -momit-leaf-frame-pointer")
-else ()
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fomit-frame-pointer")
 endif ()
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -g -O0")
@@ -34,7 +27,7 @@ endif ()
 
 find_package(Java COMPONENTS Runtime REQUIRED)
 
-set(ANTLR4_TAG "4.9.1")
+set(ANTLR4_TAG "4.8")
 set(ANTLR_EXECUTABLE "${PROJECT_BINARY_DIR}/antlr-${ANTLR4_TAG}-complete.jar")
 if (NOT EXISTS "${ANTLR_EXECUTABLE}")
     file(DOWNLOAD https://www.antlr.org/download/antlr-${ANTLR4_TAG}-complete.jar ${ANTLR_EXECUTABLE} SHOW_PROGRESS)
@@ -85,14 +78,14 @@ endif ()
 
 # include generated files in project environment
 if (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1")
-    add_library(sparql-parser-base
+    add_library(sparql-parser-base STATIC
             ${ANTLR_SparqlLexer_CXX_OUTPUTS}
             ${ANTLR_SparqlParser_CXX_OUTPUTS})
     target_include_directories(sparql-parser-base PUBLIC
             ${ANTLR_SparqlLexer_OUTPUT_DIR}
             ${ANTLR_SparqlParser_OUTPUT_DIR})
 else ()
-    add_library(sparql-parser-base
+    add_library(sparql-parser-base STATIC
             ${ANTLR_Sparql_CXX_OUTPUTS})
     target_include_directories(sparql-parser-base PUBLIC
             ${ANTLR_Sparql_OUTPUT_DIR})
@@ -111,6 +104,7 @@ target_include_directories(sparql-parser-base PUBLIC
         ${ANTLR4_INCLUDE_DIRS}
         ${PROJECT_SOURCE_DIR}/generated
         )
+add_library(sparql-parser-base::sparql-parser-base ALIAS sparql-parser-base)
 
 # Make package findable
 configure_file(cmake/dummy-config.cmake.in sparql-parser-base-config.cmake @ONLY)
@@ -126,31 +120,25 @@ install(TARGETS sparql-parser-base
         EXPORT sparql-parser-base-targets
         ARCHIVE DESTINATION lib)
 
-
-install(DIRECTORY "${ANTLR_SparqlParser_OUTPUT_DIR}"
-        DESTINATION "include/"
-        FILES_MATCHING PATTERN "*.h"
-        )
-
 if (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1")
     install(DIRECTORY "${ANTLR_SparqlParser_OUTPUT_DIR}"
-            DESTINATION "include/"
+            DESTINATION "include"
             FILES_MATCHING PATTERN "*.h"
             )
     install(DIRECTORY "${ANTLR_SparqlLexer_OUTPUT_DIR}"
-            DESTINATION "include/"
+            DESTINATION "include"
             FILES_MATCHING PATTERN "*.h"
             )
 else ()
     install(DIRECTORY "${ANTLR_Sparql_OUTPUT_DIR}"
-            DESTINATION "include/"
+            DESTINATION "include"
             FILES_MATCHING PATTERN "*.h"
             )
 endif ()
 
 install(DIRECTORY
         "${ANTLR4_INCLUDE_DIRS}/"
-        DESTINATION "include/"
+        DESTINATION "include"
         FILES_MATCHING PATTERN "*.h"
         )
 

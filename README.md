@@ -31,7 +31,7 @@ There are three project-specific options you can set for CMake:
 
 To use it with [conan](https://conan.io/) you need to add the repository:
 ```shell
-conan remote add dice-group https://api.bintray.com/conan/dice-group/tentris
+conan remote add dice-group https://conan.dice-research.org/artifactory/api/conan/tentris
 ```
 
 To use it add `sparql-parser-base/0.2.1@dice-group/stable` to the `[requires]` section of your conan file.

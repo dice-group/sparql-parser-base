@@ -31,7 +31,7 @@ language=Cpp;
 
 query
     : prologue (selectQuery | constructQuery | describeQuery | askQuery)? valuesClause EOF
-    | updateCommand? EOF
+    | updateCommand EOF
     ;
 
 prologue

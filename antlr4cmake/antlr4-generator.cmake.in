@@ -1,10 +1,9 @@
+# has some modifications compared to https://github.com/antlr/antlr4/blob/4.10.1/runtime/Cpp/cmake/antlr4-generator.cmake.in
 set(ANTLR_VERSION @ANTLR_VERSION@)
 
 @PACKAGE_INIT@
 
-if (NOT ANTLR4_CPP_GENERATED_SRC_DIR)
-  set(ANTLR4_GENERATED_SRC_DIR ${CMAKE_BINARY_DIR}/antlr4_generated_src)
-endif()
+set(ANTLR4_GENERATED_SRC_DIR ${CMAKE_BINARY_DIR}/src)
 
 FIND_PACKAGE(Java COMPONENTS Runtime REQUIRED)
 
@@ -103,7 +102,7 @@ function(antlr4_generate
   endif ()
   
   if ( (ARGC GREATER_EQUAL 6 ) AND (NOT ${ARGV5} STREQUAL "") )
-    set(Antlr4_NamespaceOption "-package;${ARGV5}")
+    set(Antlr4_NamespaceOption "${ARGV5}")
 
     list( APPEND Antlr4_GeneratorStatusMessage " in Namespace ${ARGV5}" )
   else()
@@ -133,21 +132,13 @@ function(antlr4_generate
   endif()
 
   # The call to generate the files
-  add_custom_command(
-    OUTPUT ${Antlr4_GeneratedTargets}
     # Remove target directory
-    COMMAND
-    ${CMAKE_COMMAND} -E remove_directory ${Antlr4_GeneratedSrcDir}
+    execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${ANTLR4_GENERATED_SRC_DIR}/${Antlr4_ProjectTarget})
     # Create target directory
-    COMMAND
-    ${CMAKE_COMMAND} -E make_directory ${Antlr4_GeneratedSrcDir}
-    COMMAND
+    execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${ANTLR4_GENERATED_SRC_DIR}/${Antlr4_ProjectTarget})
     # Generate files
-    "${Java_JAVA_EXECUTABLE}" -jar "${ANTLR4_JAR_LOCATION}" -Werror -Dlanguage=Cpp ${Antlr4_BuildListenerOption} ${Antlr4_BuildVisitorOption} ${Antlr4_LibOption} ${ANTLR4_GENERATED_OPTIONS} -o "${Antlr4_GeneratedSrcDir}" ${Antlr4_NamespaceOption} "${Antlr4_InputFile}"
-    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-    MAIN_DEPENDENCY "${Antlr4_InputFile}"
-    DEPENDS ${Antlr4_AdditionalDependencies}
-    )
+    execute_process(COMMAND ${Java_JAVA_EXECUTABLE} -jar ${ANTLR4_JAR_LOCATION} -Werror -Dlanguage=Cpp ${Antlr4_BuildListenerOption} ${Antlr4_BuildVisitorOption} ${Antlr4_LibOption} ${ANTLR4_GENERATED_OPTIONS} -o ${Antlr4_GeneratedSrcDir} -package ${Antlr4_NamespaceOption} ${Antlr4_InputFile}
+                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 
   # set output variables in parent scope
   set( ANTLR4_INCLUDE_DIR_${Antlr4_ProjectTarget} ${Antlr4_GeneratedSrcDir} PARENT_SCOPE)

@@ -1,158 +1,112 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(sparql-parser-base VERSION 0.2.2)
+project(sparql-parser-base VERSION 0.3.0)
 
-if (NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
-    if (NOT CMAKE_BUILD_TYPE)
-        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
-    endif ()
+include(cmake/boilerplate_init.cmake)
+boilerplate_init()
+
+option(CONAN_CMAKE "If this should use conan cmake to fetch dependencies" On)
+if (IS_TOP_LEVEL AND CONAN_CMAKE)
+    include(cmake/conan_cmake.cmake)
+    install_packages_via_conan("${CMAKE_CURRENT_SOURCE_DIR}/conanfile.py" "")
 endif ()
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -g -O0")
+find_package(antlr4-runtime REQUIRED)
 
-if (DEFINED ${SPARQL_BASE_PARSER_MARCH})
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=${SPARQL_BASE_PARSER_MARCH}")
+set(SPARQL_VERSION "1.1" CACHE STRING "SPARQL version" FORCE)
+mark_as_advanced(SPARQL_VERSION)
+
+
+set(ANTLR4_TAG "4.10.1" CACHE STRING "Antlr4 version" FORCE)
+mark_as_advanced(ANTLR4_TAG)
+set(ANTLR4_JAR_LOCATION "${PROJECT_BINARY_DIR}/antlr-${ANTLR4_TAG}-complete.jar")
+if (NOT EXISTS "${ANTLR4_JAR_LOCATION}")
+    file(DOWNLOAD https://www.antlr.org/download/antlr-${ANTLR4_TAG}-complete.jar ${ANTLR4_JAR_LOCATION} SHOW_PROGRESS)
 endif ()
 
-# build antlr4
-LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/antlr4cmake)
+set(ANTLR_VERSION "${ANTLR4_TAG}")
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/antlr4cmake/antlr4-generator.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/antlr4cmake/antlr4-generator.cmake @ONLY)
+include(${CMAKE_CURRENT_BINARY_DIR}/antlr4cmake/antlr4-generator.cmake)
 
-set(ANTLR4_WITH_STATIC_CRT OFF)
-add_definitions(-DANTLR4CPP_STATIC)
+message("antlr4-runtime_DIR ${antlr4-runtime_DIR}")
 
-if (CMAKE_SYSTEM_NAME MATCHES "Linux")
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(UUID REQUIRED uuid)
-endif ()
 
-find_package(Java COMPONENTS Runtime REQUIRED)
-
-set(ANTLR4_TAG "4.8")
-set(ANTLR_EXECUTABLE "${PROJECT_BINARY_DIR}/antlr-${ANTLR4_TAG}-complete.jar")
-if (NOT EXISTS "${ANTLR_EXECUTABLE}")
-    file(DOWNLOAD https://www.antlr.org/download/antlr-${ANTLR4_TAG}-complete.jar ${ANTLR_EXECUTABLE} SHOW_PROGRESS)
-endif ()
-SET(ANTLR4_INSTALL ON)
-include(ExternalAntlr4Cpp)
-
-# add antrl4cpp artifacts to project environment
-include_directories(${ANTLR4_INCLUDE_DIRS})
-
-if (NOT DEFINED SPARQL_BASE_PARSER_SPARQL_VERSION)
-    set(SPARQL_BASE_PARSER_SPARQL_VERSION "1.1")
+if (${SPARQL_VERSION} STREQUAL "1.1")
+    file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/SparqlLexer_${SPARQL_VERSION}.g4
+            ${CMAKE_CURRENT_BINARY_DIR}/SparqlLexer.g4)
+    file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/SparqlParser_${SPARQL_VERSION}.g4
+            ${CMAKE_CURRENT_BINARY_DIR}/SparqlParser.g4)
 else ()
-    if (NOT (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.0" OR ${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1"))
-        message(FATAL_ERROR "SPARQL_BASE_PARSER_SPARQL_VERSION must be \"1.1\" or \"1.0\" but is ${SPARQL_BASE_PARSER_SPARQL_VERSION}")
-    endif ()
-endif ()
-
-if (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1")
-    file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/SparqlLexer_${SPARQL_BASE_PARSER_SPARQL_VERSION}.g4
-            ${CMAKE_CURRENT_SOURCE_DIR}/SparqlLexer.g4)
-    file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/SparqlParser_${SPARQL_BASE_PARSER_SPARQL_VERSION}.g4
-            ${CMAKE_CURRENT_SOURCE_DIR}/SparqlParser.g4)
-else ()
-    file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/SparqlParser_${SPARQL_BASE_PARSER_SPARQL_VERSION}.g4
-            ${CMAKE_CURRENT_SOURCE_DIR}/Sparql.g4
+    file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/SparqlParser_${SPARQL_VERSION}.g4
+            ${CMAKE_CURRENT_BINARY_DIR}/Sparql.g4
             )
 endif ()
 
-# add macros to generate ANTLR Cpp code from grammar
-find_package(ANTLR REQUIRED)
-if (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1")
-    message("Generating SPARQL 1.1 Parser. If you want to generate the legacy SPARQL 1.0 parser, use -SPARQL_BASE_PARSER_SPARQL_VERSION=1.0 or the conan package option sparql-parser-base:sparql_version=1.0 .")
-    antlr_target(SparqlLexer SparqlLexer.g4 LEXER
-            PACKAGE Dice::sparql_parser::base)
-    antlr_target(SparqlParser SparqlParser.g4 PARSER
-            PACKAGE Dice::sparql_parser::base
-            DEPENDS_ANTLR SparqlLexer
-            LISTENER
-            VISITOR
-            COMPILE_FLAGS -lib ${ANTLR_SparqlLexer_OUTPUT_DIR})
+
+if (${SPARQL_VERSION} STREQUAL "1.1")
+    message("Generating SPARQL 1.1 Parser. If you want to generate the legacy SPARQL 1.0 parser, use -SPARQL_VERSION=1.0 or the conan package option sparql-parser-base:sparql_version=1.0 .")
+    antlr4_generate(
+            SparqlLexer
+            "${CMAKE_CURRENT_BINARY_DIR}/SparqlLexer.g4"
+            LEXER
+            FALSE # don't generate listener for lexer (not possible)
+            FALSE # don't generate visitor  for lexer (not possible)
+            "dice::sparql_parser::base"
+    )
+    file(CREATE_LINK ${ANTLR4_GENERATED_SRC_DIR}/SparqlLexer/SparqlLexer.tokens
+            ${CMAKE_CURRENT_BINARY_DIR}/SparqlLexer.tokens)
+    file(CREATE_LINK ${ANTLR4_GENERATED_SRC_DIR}/SparqlLexer/SparqlLexer.interp
+            ${CMAKE_CURRENT_BINARY_DIR}/SparqlLexer.interp)
+    antlr4_generate(
+            SparqlParser
+            "${CMAKE_CURRENT_BINARY_DIR}/SparqlParser.g4"
+            PARSER
+            TRUE # generate listener
+            TRUE # generate visitor
+            "dice::sparql_parser::base"
+    )
 else () # SPARQL 1.1
-    message("Generating SPARQL 1.0 Parser. This is a legacy version and will most probably receive no more updates.")
-    antlr_target(Sparql Sparql.g4 LEXER PARSER LISTENER VISITOR
-            PACKAGE Dice::sparql_parser::base
-            )
+    message("Generating SPARQL 1.0 Parser. This is a legacy version and will not receive any more updates.")
+    antlr4_generate(
+            Sparql
+            "${CMAKE_CURRENT_BINARY_DIR}/Sparql.g4"
+            BOTH
+            TRUE # generate listener
+            TRUE # generate visitor
+            "dice::sparql_parser::base"
+    )
 endif ()
 
-# include generated files in project environment
-if (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1")
-    add_library(sparql-parser-base STATIC
-            ${ANTLR_SparqlLexer_CXX_OUTPUTS}
-            ${ANTLR_SparqlParser_CXX_OUTPUTS})
+if (${SPARQL_VERSION} STREQUAL "1.1")
+    add_library("${PROJECT_NAME}"
+            ${ANTLR4_SRC_FILES_SparqlLexer}
+            ${ANTLR4_SRC_FILES_SparqlParser})
     target_include_directories(sparql-parser-base PUBLIC
-            ${ANTLR_SparqlLexer_OUTPUT_DIR}
-            ${ANTLR_SparqlParser_OUTPUT_DIR})
+            "$<BUILD_INTERFACE:${ANTLR4_INCLUDE_DIR_SparqlLexer}>"
+            "$<BUILD_INTERFACE:${ANTLR4_INCLUDE_DIR_SparqlParser}>")
+
 else ()
-    add_library(sparql-parser-base STATIC
-            ${ANTLR_Sparql_CXX_OUTPUTS})
+    add_library("${PROJECT_NAME}"
+            ${ANTLR4_SRC_FILES_Sparql})
     target_include_directories(sparql-parser-base PUBLIC
-            ${ANTLR_Sparql_OUTPUT_DIR})
+            "$<BUILD_INTERFACE:${ANTLR4_INCLUDE_DIR_Sparql}>")
 endif ()
 
-set_target_properties(sparql-parser-base PROPERTIES
-        CXX_STANDARD 17)
+add_library("${PROJECT_NAME}::${PROJECT_NAME}" ALIAS "${PROJECT_NAME}")
 
-target_link_libraries(sparql-parser-base PUBLIC antlr4_static)
-
-
-add_dependencies(sparql-parser-base
-        antlr4_static)
-
-target_include_directories(sparql-parser-base PUBLIC
-        ${ANTLR4_INCLUDE_DIRS}
-        ${PROJECT_SOURCE_DIR}/generated
-        )
-add_library(sparql-parser-base::sparql-parser-base ALIAS sparql-parser-base)
-
-# Make package findable
-configure_file(cmake/dummy-config.cmake.in sparql-parser-base-config.cmake @ONLY)
-configure_file(antlr4cmake/antlr4-runtime.cmake.in antlr4-runtime-config.cmake @ONLY)
-
-# Enable version checks in find_package
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(sparql-parser-base-config-version.cmake COMPATIBILITY SameMajorVersion)
-write_basic_package_version_file(antlr4-runtime-config-version.cmake COMPATIBILITY SameMajorVersion)
-
-# install and export target
-install(TARGETS sparql-parser-base
-        EXPORT sparql-parser-base-targets
-        ARCHIVE DESTINATION lib)
-
-if (${SPARQL_BASE_PARSER_SPARQL_VERSION} STREQUAL "1.1")
-    install(DIRECTORY "${ANTLR_SparqlParser_OUTPUT_DIR}"
-            DESTINATION "include"
-            FILES_MATCHING PATTERN "*.h"
-            )
-    install(DIRECTORY "${ANTLR_SparqlLexer_OUTPUT_DIR}"
-            DESTINATION "include"
-            FILES_MATCHING PATTERN "*.h"
-            )
-else ()
-    install(DIRECTORY "${ANTLR_Sparql_OUTPUT_DIR}"
-            DESTINATION "include"
-            FILES_MATCHING PATTERN "*.h"
-            )
-endif ()
-
-install(DIRECTORY
-        "${ANTLR4_INCLUDE_DIRS}/"
-        DESTINATION "include"
-        FILES_MATCHING PATTERN "*.h"
+target_link_libraries(sparql-parser-base PUBLIC
+        $<IF:$<BOOL:${BUILD_SHARED_LIBS}>,antlr4_shared,antlr4_static>
         )
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/antlr4-runtime-config-version.cmake DESTINATION "share/antlr4-runtime/cmake")
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sparql-parser-base-config-version.cmake DESTINATION "share/sparql-parser-base/cmake")
+set_target_properties(${PROJECT_NAME} PROPERTIES
+        VERSION ${PROJECT_VERSION}
+        SOVERSION ${PROJECT_VERSION_MAJOR}
+        CXX_STANDARD 17
+        CXX_EXTENSIONS OFF
+        CXX_STANDARD_REQUIRED ON)
 
-if (EXISTS LICENSE.txt)
-    install(FILES LICENSE.txt
-            DESTINATION "share/doc/sparql-parser-base")
-elseif (EXISTS ../../LICENSE.txt)
-    install(FILES ../../LICENSE.txt
-            DESTINATION "share/doc/sparql-parser-base")
+if (IS_TOP_LEVEL)
+    include(cmake/install_library.cmake)
+    install_cpp_library(${PROJECT_NAME} ${CMAKE_CURRENT_BINARY_DIR}/src/)
 endif ()
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/antlr4_runtime/src/antlr4_runtime/LICENSE.txt
-        DESTINATION "share/licenses/antlr4-runtime")

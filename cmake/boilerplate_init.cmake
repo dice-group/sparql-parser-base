@@ -17,6 +17,4 @@ macro(boilerplate_init)
         set(CMAKE_CXX_VISIBILITY_PRESET default)
         set(CMAKE_VISIBILITY_INLINES_HIDDEN NO)
     endif ()
-
-    string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" IS_TOP_LEVEL)
 endmacro()

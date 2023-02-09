@@ -1,9 +1,12 @@
 import os
 import re
 
+from conan.tools.build import check_min_cppstd
+from conan.tools.cmake import CMake
 from conan.tools.microsoft import is_msvc
-from conans import ConanFile, CMake, tools
-from conans.errors import ConanInvalidConfiguration
+from conan.tools.files import load, rmdir
+from conan import ConanFile, Version
+from conan.errors import ConanInvalidConfiguration
 
 
 class Recipe(ConanFile):
@@ -32,7 +35,7 @@ class Recipe(ConanFile):
 
     def set_version(self):
         if not hasattr(self, 'version') or self.version is None:
-            cmake_file = tools.load(os.path.join(self.recipe_folder, "CMakeLists.txt"))
+            cmake_file = load(self, os.path.join(self.recipe_folder, "CMakeLists.txt"))
             self.version = re.search(r"project\([^)]*VERSION\s+(\d+\.\d+.\d+)[^)]*\)", cmake_file).group(1)
 
     compiler_required_cpp17 = {
@@ -52,12 +55,12 @@ class Recipe(ConanFile):
             # Need to deal with missing libuuid on Arm.
             # So far ANTLR delivers macOS binary package.
 
-        compiler_version = tools.Version(self.settings.compiler.version)
+        compiler_version = Version(self.settings.compiler.version)
         if is_msvc(self) and compiler_version < "16":
             raise ConanInvalidConfiguration("library claims C2668 'Ambiguous call to overloaded function'")
 
         if self.settings.get_safe("compiler.cppstd"):
-            tools.check_min_cppstd(self, "17")
+            check_min_cppstd(self, "17")
 
         minimum_version = self.compiler_required_cpp17.get(str(self.settings.compiler), False)
 
@@ -75,8 +78,11 @@ class Recipe(ConanFile):
         if self._cmake:
             return self._cmake
         self._cmake = CMake(self)
-        self._cmake.definitions['CONAN_CMAKE'] = False
-        self._cmake.definitions['ANTLR4_TAG'] = self.requires['antlr4-cppruntime'].ref.version
+        self._cmake.configure(
+            variables=
+            {"USE_CONAN": False,
+             "ANTLR4_TAG": self.requires['antlr4-cppruntime'].ref.version}
+        )
         self._cmake.configure()
         return self._cmake
 
@@ -88,8 +94,8 @@ class Recipe(ConanFile):
         cmake = self._configure_cmake()
         cmake.install()
         self.copy("LICENSE", src=self.folders.base_source, dst="licenses")
-        tools.rmdir(os.path.join(self.package_folder, "cmake"))
-        tools.rmdir(os.path.join(self.package_folder, "share"))
+        rmdir(self, os.path.join(self.package_folder, "cmake"))
+        rmdir(self, os.path.join(self.package_folder, "share"))
 
     def package_info(self):
         self.cpp_info.libs = ["sparql-parser-base"]

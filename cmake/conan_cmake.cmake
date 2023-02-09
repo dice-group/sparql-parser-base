@@ -17,15 +17,14 @@ macro(install_packages_via_conan conanfile conan_options)
     endif ()
 
     conan_cmake_autodetect(settings)
-
-    if (IS_TOP_LEVEL AND BUILD_TESTING)
-        set(CONAN_HYPERTRIE_WITH_TEST_DEPS "True")
+    conan_check(VERSION 1 DETECT_QUIET)
+    if (CONAN_CMD)
+        conan_cmake_install(PATH_OR_REFERENCE ${conanfile}
+                BUILD missing
+                SETTINGS ${settings}
+                OPTIONS ${conan_options_arg}
+                GENERATOR "CMakeDeps")
     else ()
-        set(CONAN_HYPERTRIE_WITH_TEST_DEPS "False")
+        message(WARNING "No conan executable was found. Dependency retrieval via conan is disabled. System dependencies will be used if available.")
     endif ()
-    conan_cmake_install(PATH_OR_REFERENCE ${conanfile}
-            BUILD missing
-            SETTINGS ${settings}
-            OPTIONS ${conan_options_arg}
-            GENERATOR "CMakeDeps")
 endmacro()

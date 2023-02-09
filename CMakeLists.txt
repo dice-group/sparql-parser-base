@@ -1,14 +1,20 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.21)
 
-project(sparql-parser-base VERSION 0.3.0)
+project(sparql-parser-base VERSION 0.3.1)
 
 include(cmake/boilerplate_init.cmake)
 boilerplate_init()
 
-option(CONAN_CMAKE "If this should use conan cmake to fetch dependencies" On)
-if (IS_TOP_LEVEL AND CONAN_CMAKE)
+OPTION(USE_CONAN "If available, use conan to retrieve dependencies." ON)
+if (PROJECT_IS_TOP_LEVEL AND USE_CONAN)
     include(cmake/conan_cmake.cmake)
-    install_packages_via_conan("${CMAKE_CURRENT_SOURCE_DIR}/conanfile.py" "")
+    if (PROJECT_IS_TOP_LEVEL AND BUILD_TESTING)
+        set(CONAN_HYPERTRIE_WITH_TEST_DEPS "True")
+    else()
+        set(CONAN_HYPERTRIE_WITH_TEST_DEPS "False")
+    endif()
+    set(CONAN_OPTIONS "with_test_deps=${CONAN_HYPERTRIE_WITH_TEST_DEPS}")
+    install_packages_via_conan("${CMAKE_SOURCE_DIR}/conanfile.py" "${CONAN_OPTIONS}")
 endif ()
 
 find_package(antlr4-runtime REQUIRED)
@@ -106,7 +112,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         CXX_EXTENSIONS OFF
         CXX_STANDARD_REQUIRED ON)
 
-if (IS_TOP_LEVEL)
+if (PROJECT_IS_TOP_LEVEL)
     include(cmake/install_library.cmake)
     install_cpp_library(${PROJECT_NAME} ${CMAKE_CURRENT_BINARY_DIR}/src/)
 endif ()

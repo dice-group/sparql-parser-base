@@ -15,7 +15,7 @@ jobs:
   publish-conan-branch-package:
     uses: dice-group/cpp-conan-release-reusable-workflow/.github/workflows/publish-release.yml@main
     with:
-      public_artifactory: false
+      public_artifactory: true
       os: ubuntu-22.04
       compiler: clang-14
       cmake-version: 3.22.6

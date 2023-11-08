@@ -72,6 +72,6 @@ make -j sparql-parser-base
 
 `-DSPARQL_VERSION="1.0"/"1.1" [default: "1.1"]`: SPARQL version of the generated parser.
 
-`-DANTLR4_TAG=... [default: "4.10.1"]`: ANTLR4 version to be used.
+`-DANTLR4_TAG=... [default: "4.13.1"]`: ANTLR4 version to be used.
 
 `-DCONAN_CMAKE=ON/OFF [default: ON]`: If available, use Conan to retrieve dependencies.

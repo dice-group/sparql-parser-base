@@ -15,7 +15,6 @@ jobs:
       compiler: clang-15
       cmake-version: 3.22.6
       conan-version: 2.0.13
-      conan-stdcpp: gnu17
     secrets:
       CONAN_USER: ${{ secrets.CONAN_USER }}
       CONAN_PW: ${{ secrets.CONAN_PW }}

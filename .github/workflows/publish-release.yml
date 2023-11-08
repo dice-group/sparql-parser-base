@@ -12,7 +12,7 @@ concurrency:
   group: publish-release-${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  publish-conan-branch-package:
+  publish-release:
     uses: dice-group/cpp-conan-release-reusable-workflow/.github/workflows/publish-release.yml@main
     with:
       public_artifactory: true

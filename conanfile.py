@@ -1,12 +1,12 @@
 import os
 import re
 
-from conan.tools.build import check_min_cppstd
-from conan.tools.cmake import CMake
-from conan.tools.microsoft import is_msvc
-from conan.tools.files import load, rmdir
-from conan import ConanFile, Version
+from conan import ConanFile
 from conan.errors import ConanInvalidConfiguration
+from conan.tools.build import check_min_cppstd
+from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.files import load, rmdir, copy
+from conan.tools.microsoft import is_msvc
 
 
 class Recipe(ConanFile):
@@ -28,22 +28,17 @@ class Recipe(ConanFile):
         "fPIC": True,
         'sparql_version': '1.1',
     }
-    requires = "antlr4-cppruntime/4.10.1",
     settings = "os", "compiler", "build_type", "arch"
     generators = ("CMakeDeps", "CMakeToolchain")
     exports_sources = "CMakeLists.txt", "antlr4cmake/antlr4-generator.cmake.in", "cmake/*", "SparqlLexer_1.1.g4", "SparqlParser_1.0.g4", "SparqlParser_1.1.g4"
+
+    def requirements(self):
+        self.requires("antlr4-cppruntime/4.13.1")
 
     def set_version(self):
         if not hasattr(self, 'version') or self.version is None:
             cmake_file = load(self, os.path.join(self.recipe_folder, "CMakeLists.txt"))
             self.version = re.search(r"project\([^)]*VERSION\s+(\d+\.\d+.\d+)[^)]*\)", cmake_file).group(1)
-
-    compiler_required_cpp17 = {
-        "Visual Studio": "16",
-        "gcc": "7",
-        "clang": "5",
-        "apple-clang": "9.1"
-    }
 
     def config_options(self):
         if self.settings.os == "Windows":
@@ -55,22 +50,15 @@ class Recipe(ConanFile):
             # Need to deal with missing libuuid on Arm.
             # So far ANTLR delivers macOS binary package.
 
-        compiler_version = Version(self.settings.compiler.version)
+        compiler_version = self.settings.compiler.version
         if is_msvc(self) and compiler_version < "16":
             raise ConanInvalidConfiguration("library claims C2668 'Ambiguous call to overloaded function'")
 
         if self.settings.get_safe("compiler.cppstd"):
             check_min_cppstd(self, "17")
 
-        minimum_version = self.compiler_required_cpp17.get(str(self.settings.compiler), False)
-
-        if minimum_version:
-            if compiler_version < minimum_version:
-                raise ConanInvalidConfiguration(
-                    "{} requires C++17, which your compiler does not support.".format(self.name))
-        else:
-            self.output.warn(
-                "{} requires C++17. Your compiler is unknown. Assuming it supports C++17.".format(self.name))
+    def layout(self):
+        cmake_layout(self)
 
     _cmake = None
 
@@ -81,7 +69,7 @@ class Recipe(ConanFile):
         self._cmake.configure(
             variables=
             {"USE_CONAN": False,
-             "ANTLR4_TAG": self.requires['antlr4-cppruntime'].ref.version}
+             "ANTLR4_TAG": self.dependencies['antlr4-cppruntime'].ref.version}
         )
         self._cmake.configure()
         return self._cmake
@@ -93,7 +81,7 @@ class Recipe(ConanFile):
     def package(self):
         cmake = self._configure_cmake()
         cmake.install()
-        self.copy("LICENSE", src=self.folders.base_source, dst="licenses")
+        copy(self, "LICENSE", src=self.folders.base_source, dst="licenses")
         rmdir(self, os.path.join(self.package_folder, "cmake"))
         rmdir(self, os.path.join(self.package_folder, "share"))
 

@@ -4,7 +4,7 @@ import re
 from conan import ConanFile
 from conan.errors import ConanInvalidConfiguration
 from conan.tools.build import check_min_cppstd
-from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.cmake import CMake
 from conan.tools.files import load, rmdir, copy
 from conan.tools.microsoft import is_msvc
 
@@ -33,7 +33,7 @@ class Recipe(ConanFile):
     exports_sources = "CMakeLists.txt", "antlr4cmake/antlr4-generator.cmake.in", "cmake/*", "SparqlLexer_1.1.g4", "SparqlParser_1.0.g4", "SparqlParser_1.1.g4"
 
     def requirements(self):
-        self.requires("antlr4-cppruntime/4.13.1")
+        self.requires("antlr4-cppruntime/4.13.1", transitive_headers=True)
 
     def set_version(self):
         if not hasattr(self, 'version') or self.version is None:
@@ -56,9 +56,6 @@ class Recipe(ConanFile):
 
         if self.settings.get_safe("compiler.cppstd"):
             check_min_cppstd(self, "17")
-
-    def layout(self):
-        cmake_layout(self)
 
     _cmake = None
 

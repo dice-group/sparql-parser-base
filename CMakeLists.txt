@@ -23,7 +23,7 @@ set(SPARQL_VERSION "1.1" CACHE STRING "SPARQL version" FORCE)
 mark_as_advanced(SPARQL_VERSION)
 
 
-set(ANTLR4_TAG "4.10.1" CACHE STRING "Antlr4 version" FORCE)
+set(ANTLR4_TAG "4.13.1" CACHE STRING "Antlr4 version" FORCE)
 mark_as_advanced(ANTLR4_TAG)
 set(ANTLR4_JAR_LOCATION "${PROJECT_BINARY_DIR}/antlr-${ANTLR4_TAG}-complete.jar")
 if (NOT EXISTS "${ANTLR4_JAR_LOCATION}")

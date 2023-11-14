@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(sparql-parser-base VERSION 0.3.3)
+project(sparql-parser-base VERSION 0.3.4)
 
 include(cmake/boilerplate_init.cmake)
 boilerplate_init()

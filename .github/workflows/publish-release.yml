@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   publish-release:
-    uses: dice-group/cpp-conan-release-reusable-workflow/.github/workflows/publish-release.yml@feature/conan2
+    uses: dice-group/cpp-conan-release-reusable-workflow/.github/workflows/publish-release.yml@main
     with:
       public_artifactory: true
       os: ubuntu-22.04

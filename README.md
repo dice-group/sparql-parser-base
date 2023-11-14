@@ -27,7 +27,7 @@ To use sparql-parser-base, add it to your `conanfile.txt`:
 
 ```
 [requires]
-sparql-parser-base/0.3.3 
+sparql-parser-base/0.3.4
 ```
 
 If you want to use SPARQL 1.0 instead, add `sparql-parser-base:sparql_version=1.0` to the `[options]` section of your
@@ -42,7 +42,7 @@ include(FetchContent)
 FetchContent_Declare(
         sparql-parser-base
         GIT_REPOSITORY "${CMAKE_CURRENT_SOURCE_DIR}/../"
-        GIT_TAG 0.3.3
+        GIT_TAG 0.3.4
         GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(sparql-parser-base)
@@ -72,6 +72,6 @@ make -j sparql-parser-base
 
 `-DSPARQL_VERSION="1.0"/"1.1" [default: "1.1"]`: SPARQL version of the generated parser.
 
-`-DANTLR4_TAG=... [default: "4.10.1"]`: ANTLR4 version to be used.
+`-DANTLR4_TAG=... [default: "4.13.1"]`: ANTLR4 version to be used.
 
 `-DCONAN_CMAKE=ON/OFF [default: ON]`: If available, use Conan to retrieve dependencies.

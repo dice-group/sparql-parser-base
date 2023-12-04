@@ -98,6 +98,8 @@ else ()
             "$<BUILD_INTERFACE:${ANTLR4_INCLUDE_DIR_Sparql}>")
 endif ()
 
+add_compile_definitions(ANTLR4_USE_THREAD_LOCAL_CACHE=1)
+
 add_library("${PROJECT_NAME}::${PROJECT_NAME}" ALIAS "${PROJECT_NAME}")
 
 target_link_libraries(sparql-parser-base PUBLIC

@@ -26,6 +26,8 @@ lexer grammar SparqlLexer;
 
 WS : (' '| '\t'| EOL)+ -> channel(99);
 
+Q_HINT_VAR_ORD: ('Q'|'q')'_'('H'|'h')('I'|'i')('N'|'n')('T'|'t')'_'('V'|'v')('A'|'a')('R'|'r')'_'('O'|'o')('R'|'r')('D'|'d');
+
 BASE : ('B'|'b')('A'|'a')('S'|'s')('E'|'e');
 
 PREFIX : ('P'|'p')('R'|'r')('E'|'e')('F'|'f')('I'|'i')('X'|'x');

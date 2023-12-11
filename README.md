@@ -26,7 +26,7 @@ To use sparql-parser-base, add it to your `conanfile.txt`:
 
 ```
 [requires]
-sparql-parser-base/0.3.4
+sparql-parser-base/0.3.5
 ```
 
 ### With FetchContent
@@ -38,7 +38,7 @@ include(FetchContent)
 FetchContent_Declare(
         sparql-parser-base
         GIT_REPOSITORY "${CMAKE_CURRENT_SOURCE_DIR}/../"
-        GIT_TAG 0.3.4
+        GIT_TAG 0.3.5
         GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(sparql-parser-base)

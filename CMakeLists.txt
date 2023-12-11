@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(sparql-parser-base VERSION 0.3.4)
+project(sparql-parser-base VERSION 0.3.5)
 
 include(cmake/boilerplate_init.cmake)
 boilerplate_init()
@@ -32,19 +32,10 @@ include(${CMAKE_CURRENT_BINARY_DIR}/antlr4cmake/antlr4-generator.cmake)
 
 message("antlr4-runtime_DIR ${antlr4-runtime_DIR}")
 
-
-file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/SparqlLexer.g4
-        ${CMAKE_CURRENT_BINARY_DIR}/SparqlLexer.g4
-)
-file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/SparqlParser.g4
-        ${CMAKE_CURRENT_BINARY_DIR}/SparqlParser.g4
-)
-
-
 message("Generating SPARQL 1.1 Parser")
 antlr4_generate(
         SparqlLexer
-        "${CMAKE_CURRENT_BINARY_DIR}/SparqlLexer.g4"
+        "${CMAKE_CURRENT_SOURCE_DIR}/SparqlLexer.g4"
         LEXER
         FALSE # don't generate listener for lexer (not possible)
         FALSE # don't generate visitor  for lexer (not possible)
@@ -56,7 +47,7 @@ file(CREATE_LINK ${ANTLR4_GENERATED_SRC_DIR}/SparqlLexer/SparqlLexer.interp
         ${CMAKE_CURRENT_BINARY_DIR}/SparqlLexer.interp)
 antlr4_generate(
         SparqlParser
-        "${CMAKE_CURRENT_BINARY_DIR}/SparqlParser.g4"
+        "${CMAKE_CURRENT_SOURCE_DIR}/SparqlParser.g4"
         PARSER
         TRUE # generate listener
         TRUE # generate visitor

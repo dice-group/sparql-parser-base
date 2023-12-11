@@ -55,7 +55,7 @@ subSelect
     ;
     	
 selectClause
-    : SELECT selectModifier? (selectVariables+ | '*')
+    : hintsClause SELECT selectModifier? (selectVariables+ | '*')
     ;
 
 selectModifier
@@ -68,7 +68,7 @@ selectVariables
     ;
 
 constructQuery
-    : CONSTRUCT (constructTemplate datasetClause* whereClause solutionModifier | datasetClause* WHERE '{' triplesTemplate? '}' solutionModifier)
+    : hintsClause CONSTRUCT (constructTemplate datasetClause* whereClause solutionModifier | datasetClause* WHERE '{' triplesTemplate? '}' solutionModifier)
     ;
 
 describeQuery
@@ -76,7 +76,21 @@ describeQuery
     ;
 
 askQuery
-    : ASK datasetClause* whereClause solutionModifier
+    : hintsClause ASK datasetClause* whereClause solutionModifier
+    ;
+
+// NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)
+hintsClause
+    : variableOrdering?
+    ;
+
+// NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)
+variableOrdering
+    : Q_HINT_VAR_ORD varOrBlankNode+
+    ;
+
+varOrBlankNode
+    : var | blankNode
     ;
 
 datasetClause

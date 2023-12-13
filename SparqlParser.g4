@@ -80,6 +80,7 @@ askQuery
     ;
 
 // NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)
+// NOTE: The order matters (if there is a variableOrdering hint, it must be provided before the cardinalityEstimation hint
 hintsClause
     : variableOrdering? cardinalityEstimation?
     ;

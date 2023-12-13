@@ -41,3 +41,7 @@ venv/
 # project specific
 /sparql-grammer/generated/
 Sparql.g4
+
+# ANTLR tool
+gen/
+SparqlLexer.tokens

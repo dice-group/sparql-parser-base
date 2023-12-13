@@ -81,13 +81,19 @@ askQuery
 
 // NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)
 hintsClause
-    : variableOrdering?
+    : variableOrdering? cardinalityEstimation?
     ;
 
 // NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)
 variableOrdering
     : Q_HINT_VAR_ORD varOrBlankNode+
     ;
+
+// NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)
+cardinalityEstimation
+    : Q_HINT_CARD_EST (CARD_EST_REDUCTION_FACTOR|CARD_EST_MIN_CARDINALITY)
+    ;
+
 
 varOrBlankNode
     : var | blankNode

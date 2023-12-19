@@ -1,6 +1,6 @@
 # SPARQL-parser-base
 
-[ANTLR-v4-based](https://github.com/antlr/antlr4)-based C++17 parser for[SPARQL 1.1](https://www.w3.org/TR/sparql11-overview/)
+[ANTLR-v4-based](https://github.com/antlr/antlr4)-based C++17 parser for [SPARQL 1.1](https://www.w3.org/TR/sparql11-overview/)
 with visitors and listeners. During CMake configuration, the ANTLR v4 code generator is called. 
 
 ## Requirements

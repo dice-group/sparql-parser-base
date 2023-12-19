@@ -21,16 +21,14 @@ class Recipe(ConanFile):
     options = {
         "shared": [True, False],
         "fPIC": [True, False],
-        'sparql_version': ['1.0', '1.1'],
     }
     default_options = {
         "shared": False,
         "fPIC": True,
-        'sparql_version': '1.1',
     }
     settings = "os", "compiler", "build_type", "arch"
     generators = ("CMakeDeps", "CMakeToolchain")
-    exports_sources = "CMakeLists.txt", "antlr4cmake/antlr4-generator.cmake.in", "cmake/*", "SparqlLexer_1.1.g4", "SparqlParser_1.0.g4", "SparqlParser_1.1.g4"
+    exports_sources = "CMakeLists.txt", "antlr4cmake/antlr4-generator.cmake.in", "cmake/*", "SparqlLexer.g4", "SparqlParser.g4"
 
     def requirements(self):
         self.requires("antlr4-cppruntime/4.13.1", transitive_headers=True)

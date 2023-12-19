@@ -1,7 +1,6 @@
 # SPARQL-parser-base
 
-[ANTLR-v4-based](https://github.com/antlr/antlr4)-based C++17 parser
-for [SPARQL 1.0](https://www.w3.org/TR/rdf-sparql-query/) and [SPARQL 1.1](https://www.w3.org/TR/sparql11-overview/)
+[ANTLR-v4-based](https://github.com/antlr/antlr4)-based C++17 parser for [SPARQL 1.1](https://www.w3.org/TR/sparql11-overview/)
 with visitors and listeners. During CMake configuration, the ANTLR v4 code generator is called. 
 
 ## Requirements
@@ -27,11 +26,8 @@ To use sparql-parser-base, add it to your `conanfile.txt`:
 
 ```
 [requires]
-sparql-parser-base/0.3.4
+sparql-parser-base/0.3.5
 ```
-
-If you want to use SPARQL 1.0 instead, add `sparql-parser-base:sparql_version=1.0` to the `[options]` section of your
-conan file.
 
 ### With FetchContent
 
@@ -42,7 +38,7 @@ include(FetchContent)
 FetchContent_Declare(
         sparql-parser-base
         GIT_REPOSITORY "${CMAKE_CURRENT_SOURCE_DIR}/../"
-        GIT_TAG 0.3.4
+        GIT_TAG 0.3.5
         GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(sparql-parser-base)
@@ -70,7 +66,7 @@ make -j sparql-parser-base
 
 `-DBUILD_EXAMPLES=ON/OFF [default: OFF]`: Build the examples.
 
-`-DSPARQL_VERSION="1.0"/"1.1" [default: "1.1"]`: SPARQL version of the generated parser.
+
 
 `-DANTLR4_TAG=... [default: "4.13.1"]`: ANTLR4 version to be used.
 

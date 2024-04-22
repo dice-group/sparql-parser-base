@@ -72,7 +72,7 @@ constructQuery
     ;
 
 describeQuery
-    : DESCRIBE (varOrIRI+ | '*') datasetClause* whereClause? solutionModifier
+    : DESCRIBE describeAlgorithm? (varOrIRI+ | '*') datasetClause* whereClause? solutionModifier
     ;
 
 askQuery
@@ -95,6 +95,10 @@ cardinalityEstimation
     : Q_HINT_CARD_EST (CARD_EST_REDUCTION_FACTOR|CARD_EST_MIN_CARDINALITY)
     ;
 
+// NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)
+describeAlgorithm
+    :  (CONCISE_BOUNDED_DESCRIPTION|DESCRIBE_DIRECT)
+    ;
 
 varOrBlankNode
     : var | blankNode

@@ -37,6 +37,10 @@ CARD_EST_REDUCTION_FACTOR: ('C'|'c')('A'|'a')('R'|'r')('D'|'d')'_'('E'|'e')('S'|
 CARD_EST_MIN_CARDINALITY: ('C'|'c')('A'|'a')('R'|'r')('D'|'d')'_'('E'|'e')('S'|'s')('T'|'t')'_'('M'|'m')('I'|'i')('N'|'n')'_'
                           ('C'|'c')('A'|'a')('R'|'r')('D'|'d')('I'|'i')('N'|'n')('A'|'a')('L'|'l')('I'|'i')('T'|'t')('Y'|'y');
 
+CONCISE_BOUNDED_DESCRIPTION: ('C'|'c')('B'|'b')('D'|'d');
+
+DESCRIBE_DIRECT: ('D'|'d')('I'|'i')('R'|'r')('E'|'e')('C'|'c')('T'|'t');
+
 BASE : ('B'|'b')('A'|'a')('S'|'s')('E'|'e');
 
 PREFIX : ('P'|'p')('R'|'r')('E'|'e')('F'|'f')('I'|'i')('X'|'x');

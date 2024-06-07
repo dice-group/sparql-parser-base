@@ -4,7 +4,7 @@ import re
 from conan import ConanFile
 from conan.errors import ConanInvalidConfiguration
 from conan.tools.build import check_min_cppstd
-from conan.tools.cmake import CMake
+from conan.tools.cmake import cmake_layout, CMake
 from conan.tools.files import load, rmdir, copy
 from conan.tools.microsoft import is_msvc
 
@@ -55,6 +55,9 @@ class Recipe(ConanFile):
         if self.settings.get_safe("compiler.cppstd"):
             check_min_cppstd(self, "17")
 
+    def layout(self):
+        cmake_layout(self)
+
     _cmake = None
 
     def _configure_cmake(self):
@@ -62,11 +65,8 @@ class Recipe(ConanFile):
             return self._cmake
         self._cmake = CMake(self)
         self._cmake.configure(
-            variables=
-            {"USE_CONAN": False,
-             "ANTLR4_TAG": self.dependencies['antlr4-cppruntime'].ref.version}
+            variables={"ANTLR4_TAG": self.dependencies['antlr4-cppruntime'].ref.version}
         )
-        self._cmake.configure()
         return self._cmake
 
     def build(self):

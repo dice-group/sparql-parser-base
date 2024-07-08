@@ -45,3 +45,5 @@ Sparql.g4
 # ANTLR tool
 gen/
 SparqlLexer.tokens
+/CMakeUserPresets.json
+/conan_provider.cmake

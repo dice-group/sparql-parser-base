@@ -80,14 +80,19 @@ askQuery
     ;
 
 // NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)
-// NOTE: The order matters (if there is a variableOrdering hint, it must be provided before the cardinalityEstimation hint)
+// NOTE: Only one is allowed at any time
 hintsClause
-    : variableOrdering? cardinalityEstimation?
+    : (variableOrdering|cardinalityEstimation|weightsClause)?
     ;
 
 // NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)
 variableOrdering
     : Q_HINT_VAR_ORD varOrBlankNode+
+    ;
+
+// NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)
+weightsClause
+    : WEIGHTS DECIMAL+
     ;
 
 // NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)

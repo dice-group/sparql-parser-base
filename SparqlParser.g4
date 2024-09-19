@@ -92,7 +92,7 @@ variableOrdering
 
 // NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)
 weightsClause
-    : WEIGHTS DECIMAL+
+    : WEIGHTS numericLiteral+
     ;
 
 // NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)

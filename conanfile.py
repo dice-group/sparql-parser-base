@@ -28,7 +28,7 @@ class Recipe(ConanFile):
     }
     settings = "os", "compiler", "build_type", "arch"
     generators = ("CMakeDeps", "CMakeToolchain")
-    exports_sources = "CMakeLists.txt", "antlr4cmake/antlr4-generator.cmake.in", "cmake/*", "SparqlLexer.g4", "SparqlParser.g4"
+    exports_sources = ("CMakeLists.txt", "antlr4cmake/antlr4-generator.cmake.in", "cmake/*", "SparqlLexer.g4", "SparqlParser.g4", "LICENSE-GRAMMAR", "LICENSE-APACHE", "LICENSE-MIT")
 
     def requirements(self):
         self.requires("antlr4-cppruntime/4.13.1", transitive_headers=True)
@@ -76,7 +76,7 @@ class Recipe(ConanFile):
     def package(self):
         cmake = self._configure_cmake()
         cmake.install()
-        copy(self, "LICENSE", src=self.folders.base_source, dst="licenses")
+        copy(self, "LICENSE*", src=self.source_folder, dst=os.path.join(self.package_folder, "licenses"))
         rmdir(self, os.path.join(self.package_folder, "cmake"))
         rmdir(self, os.path.join(self.package_folder, "share"))
 

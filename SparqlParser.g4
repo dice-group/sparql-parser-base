@@ -55,7 +55,7 @@ subSelect
     ;
     	
 selectClause
-    : SELECT selectModifier? (selectVariables+ | '*')
+    : hintsClause SELECT selectModifier? (selectVariables+ | '*')
     ;
 
 selectModifier
@@ -68,15 +68,40 @@ selectVariables
     ;
 
 constructQuery
-    : CONSTRUCT (constructTemplate datasetClause* whereClause solutionModifier | datasetClause* WHERE '{' triplesTemplate? '}' solutionModifier)
+    : hintsClause CONSTRUCT (constructTemplate datasetClause* whereClause solutionModifier | datasetClause* WHERE '{' triplesTemplate? '}' solutionModifier)
     ;
 
 describeQuery
-    : DESCRIBE (varOrIRI+ | '*') datasetClause* whereClause? solutionModifier
+    : DESCRIBE describeAlgorithm? (varOrIRI+ | '*') datasetClause* whereClause? solutionModifier
     ;
 
 askQuery
-    : ASK datasetClause* whereClause solutionModifier
+    : hintsClause ASK datasetClause* whereClause solutionModifier
+    ;
+
+// NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)
+// NOTE: The order matters (if there is a variableOrdering hint, it must be provided before the cardinalityEstimation hint)
+hintsClause
+    : variableOrdering? cardinalityEstimation?
+    ;
+
+// NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)
+variableOrdering
+    : Q_HINT_VAR_ORD varOrBlankNode+
+    ;
+
+// NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)
+cardinalityEstimation
+    : Q_HINT_CARD_EST (CARD_EST_REDUCTION_FACTOR|CARD_EST_MIN_CARDINALITY)
+    ;
+
+// NOT PART OF THE OFFICIAL GRAMMAR (tentris specific)
+describeAlgorithm
+    :  (CONCISE_BOUNDED_DESCRIPTION|DESCRIBE_DIRECT)
+    ;
+
+varOrBlankNode
+    : var | blankNode
     ;
 
 datasetClause

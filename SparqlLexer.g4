@@ -26,6 +26,21 @@ lexer grammar SparqlLexer;
 
 WS : (' '| '\t'| EOL)+ -> channel(99);
 
+Q_HINT_VAR_ORD: ('Q'|'q')'_'('H'|'h')('I'|'i')('N'|'n')('T'|'t')'_'('V'|'v')('A'|'a')('R'|'r')'_'('O'|'o')('R'|'r')('D'|'d');
+
+Q_HINT_CARD_EST: ('Q'|'q')'_'('H'|'h')('I'|'i')('N'|'n')('T'|'t')'_'('C'|'c')('A'|'a')('R'|'r')('D'|'d')'_'('E'|'e')('S'|'s')('T'|'t');
+
+CARD_EST_REDUCTION_FACTOR: ('C'|'c')('A'|'a')('R'|'r')('D'|'d')'_'('E'|'e')('S'|'s')('T'|'t')'_'
+                           ('R'|'r')('E'|'e')('D'|'d')('U'|'u')('C'|'c')('T'|'t')('I'|'i')('O'|'o')('N'|'n')'_'
+                           ('F'|'f')('A'|'a')('C'|'c')('T'|'t')('O'|'o')('R'|'r');
+
+CARD_EST_MIN_CARDINALITY: ('C'|'c')('A'|'a')('R'|'r')('D'|'d')'_'('E'|'e')('S'|'s')('T'|'t')'_'('M'|'m')('I'|'i')('N'|'n')'_'
+                          ('C'|'c')('A'|'a')('R'|'r')('D'|'d')('I'|'i')('N'|'n')('A'|'a')('L'|'l')('I'|'i')('T'|'t')('Y'|'y');
+
+CONCISE_BOUNDED_DESCRIPTION: ('C'|'c')('B'|'b')('D'|'d');
+
+DESCRIBE_DIRECT: ('D'|'d')('I'|'i')('R'|'r')('E'|'e')('C'|'c')('T'|'t');
+
 BASE : ('B'|'b')('A'|'a')('S'|'s')('E'|'e');
 
 PREFIX : ('P'|'p')('R'|'r')('E'|'e')('F'|'f')('I'|'i')('X'|'x');

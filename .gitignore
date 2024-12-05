@@ -40,6 +40,10 @@ venv/
 
 # project specific
 /sparql-grammer/generated/
-SparqlParser.g4
-SparqlLexer.g4
 Sparql.g4
+
+# ANTLR tool
+gen/
+SparqlLexer.tokens
+/CMakeUserPresets.json
+/conan_provider.cmake

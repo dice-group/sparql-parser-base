@@ -4,7 +4,7 @@ import re
 from conan import ConanFile
 from conan.errors import ConanInvalidConfiguration
 from conan.tools.build import check_min_cppstd
-from conan.tools.cmake import CMake
+from conan.tools.cmake import cmake_layout, CMake
 from conan.tools.files import load, rmdir, copy
 from conan.tools.microsoft import is_msvc
 
@@ -21,16 +21,14 @@ class Recipe(ConanFile):
     options = {
         "shared": [True, False],
         "fPIC": [True, False],
-        'sparql_version': ['1.0', '1.1'],
     }
     default_options = {
         "shared": False,
         "fPIC": True,
-        'sparql_version': '1.1',
     }
     settings = "os", "compiler", "build_type", "arch"
     generators = ("CMakeDeps", "CMakeToolchain")
-    exports_sources = "CMakeLists.txt", "antlr4cmake/antlr4-generator.cmake.in", "cmake/*", "SparqlLexer_1.1.g4", "SparqlParser_1.0.g4", "SparqlParser_1.1.g4"
+    exports_sources = ("CMakeLists.txt", "antlr4cmake/antlr4-generator.cmake.in", "cmake/*", "SparqlLexer.g4", "SparqlParser.g4", "LICENSE-GRAMMAR", "LICENSE-APACHE", "LICENSE-MIT")
 
     def requirements(self):
         self.requires("antlr4-cppruntime/4.13.1", transitive_headers=True)
@@ -57,6 +55,9 @@ class Recipe(ConanFile):
         if self.settings.get_safe("compiler.cppstd"):
             check_min_cppstd(self, "17")
 
+    def layout(self):
+        cmake_layout(self)
+
     _cmake = None
 
     def _configure_cmake(self):
@@ -64,11 +65,8 @@ class Recipe(ConanFile):
             return self._cmake
         self._cmake = CMake(self)
         self._cmake.configure(
-            variables=
-            {"USE_CONAN": False,
-             "ANTLR4_TAG": self.dependencies['antlr4-cppruntime'].ref.version}
+            variables={"ANTLR4_TAG": self.dependencies['antlr4-cppruntime'].ref.version}
         )
-        self._cmake.configure()
         return self._cmake
 
     def build(self):
@@ -78,7 +76,7 @@ class Recipe(ConanFile):
     def package(self):
         cmake = self._configure_cmake()
         cmake.install()
-        copy(self, "LICENSE", src=self.folders.base_source, dst="licenses")
+        copy(self, "LICENSE*", src=self.source_folder, dst=os.path.join(self.package_folder, "licenses"))
         rmdir(self, os.path.join(self.package_folder, "cmake"))
         rmdir(self, os.path.join(self.package_folder, "share"))
 

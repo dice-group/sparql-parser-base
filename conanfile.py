@@ -43,10 +43,6 @@ class Recipe(ConanFile):
             del self.options.fPIC
 
     def validate(self):
-        if str(self.settings.arch).startswith("arm"):
-            raise ConanInvalidConfiguration("arm architectures are not supported")
-            # Need to deal with missing libuuid on Arm.
-            # So far ANTLR delivers macOS binary package.
 
         compiler_version = self.settings.compiler.version
         if is_msvc(self) and compiler_version < "16":

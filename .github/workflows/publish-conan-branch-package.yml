@@ -8,13 +8,13 @@ concurrency:
 
 jobs:
   publish-conan-branch-package:
-    uses: dice-group/cpp-conan-release-reusable-workflow/.github/workflows/publish-conan-branch-package.yml@main
+    uses: dice-group/cpp-conan-release-reusable-workflow/.github/workflows/publish-conan-branch-package.yml@v1.0.3
     with:
       public_artifactory: true
-      os: ubuntu-22.04
-      compiler: clang-15
+      os: ubuntu-24.04
+      compiler: clang-19
       cmake-version: 3.24.0
-      conan-version: 2.3.0
+      conan-version: 2.21.0
     secrets:
       CONAN_USER: ${{ secrets.CONAN_USER }}
       CONAN_PW: ${{ secrets.CONAN_PW }}

@@ -16,7 +16,7 @@ jobs:
     uses: dice-group/cpp-conan-release-reusable-workflow/.github/workflows/publish-release.yml@v1.0.3
     with:
       public_artifactory: true
-      os: ubuntu-22.04
+      os: ubuntu-24.04
       compiler: clang-15
       cmake-version: 3.24.0
       conan-version: 2.3.0

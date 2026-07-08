@@ -17,9 +17,9 @@ jobs:
     with:
       public_artifactory: true
       os: ubuntu-24.04
-      compiler: clang-15
+      compiler: clang-19
       cmake-version: 3.24.0
-      conan-version: 2.3.0
+      conan-version: 2.21.0
     secrets:
       CONAN_USER: ${{ secrets.CONAN_USER }}
       CONAN_PW: ${{ secrets.CONAN_PW }}

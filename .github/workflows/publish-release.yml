@@ -18,8 +18,6 @@ jobs:
       public_artifactory: true
       os: ubuntu-24.04
       compiler: clang-19
-      cmake-version: 4.4.2
-      conan-version: 2.31.2
     secrets:
       CONAN_CICD_USERNAME: ${{ secrets.CONAN_CICD_USERNAME }}
       CONAN_CICD_PASSWORD: ${{ secrets.CONAN_CICD_PASSWORD }}

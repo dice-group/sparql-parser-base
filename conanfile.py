@@ -31,7 +31,7 @@ class Recipe(ConanFile):
     exports_sources = ("CMakeLists.txt", "antlr4cmake/antlr4-generator.cmake.in", "cmake/*", "SparqlLexer.g4", "SparqlParser.g4", "LICENSE-GRAMMAR", "LICENSE-APACHE", "LICENSE-MIT")
 
     def requirements(self):
-        self.requires("antlr4-cppruntime/4.13.1", transitive_headers=True)
+        self.requires("antlr4-cppruntime/4.13.2", transitive_headers=True)
 
     def set_version(self):
         if not hasattr(self, 'version') or self.version is None:
